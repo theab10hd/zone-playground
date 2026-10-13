@@ -1,6 +1,4 @@
-<p align="center"><img src="assets/logo.jpg" alt="zOne logo" width="96" height="96"></p>
-
-# zOne Playground
+<h1><img src="assets/logo.png" alt="zOne logo" width="40" height="40" align="top"> zOne Playground</h1>
 
 AI tools for zOne workflows that make your code more powerful.
 
