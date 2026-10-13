@@ -1,3 +1,16 @@
+# Jithu's zOne Playground
+
+AI tools for zOne workflows that make your code more powerful.
+
+This is a growing set of Claude Code plugins that take the busywork out of the day: testing, doc preparation, debugging, code refactoring and more. You describe what you need. The tools read the actual code, do the work, and show you the evidence, so you spend your time on decisions instead of chores.
+
+| Plugin | What it does |
+| --- | --- |
+| **zOne Playwright Test** | Designs, writes, runs and fixes Playwright E2E suites, and produces a PDF report |
+| *More coming* | Doc preparation, debugging, refactoring |
+
+---
+
 # zOne Playwright Test
 
 A Claude Code plugin with two commands for Playwright E2E testing:
@@ -13,7 +26,7 @@ From any Claude Code session:
 
 ```
 /plugin marketplace add https://github.com/theab10hd/zone-playwright-test.git
-/plugin install zone-playwright-test@zone-playwright-marketplace
+/plugin install zone-playwright-test@jithus-zone-playground
 ```
 
 You can also add the marketplace in the desktop app under **Plugins**. Restart Claude Code, or run `/reload-plugins`, to pick up the commands.

@@ -1,8 +1,10 @@
 {
-  "name": "zone-playwright-marketplace",
-  "owner": { "name": "theab10hd" },
+  "name": "zone-playground",
+  "owner": {
+    "name": "theab10hd"
+  },
   "metadata": {
-    "description": "zOne Playwright Test: design, write, run, fix and report Playwright E2E suites with Claude Code."
+    "description": "zOne Playground: AI tools for zOne workflows that make your code more powerful. A growing set of Claude Code plugins that take the busywork out of the day: testing, doc preparation, debugging, code refactoring and more. Describe what you need, and let the tools read the code, do the work and show you the evidence."
   },
   "plugins": [
     {
