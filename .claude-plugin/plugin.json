@@ -1,6 +1,8 @@
 {
   "name": "zone-playwright-test",
-  "version": "0.1.0",
-  "description": "Run, diagnose, fix and report zOne Playwright E2E tests by feature, group or case, with a PDF report",
-  "author": { "name": "Abhijith G" }
+  "displayName": "zOne Playwright Test",
+  "version": "0.2.0",
+  "description": "Study a feature's code, design end-to-end test cases, write the Playwright suite, run it, fix test defects, and produce a PDF report",
+  "author": { "name": "Abhijith G" },
+  "repository": "https://github.com/theab10hd/zone-playwright-test"
 }

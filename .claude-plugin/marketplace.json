@@ -1,16 +1,15 @@
 {
   "name": "zone-playwright-marketplace",
-  "owner": {
-    "name": "theab10hd"
+  "owner": { "name": "theab10hd" },
+  "metadata": {
+    "description": "zOne Playwright Test: design, write, run, fix and report Playwright E2E suites with Claude Code."
   },
   "plugins": [
     {
       "name": "zone-playwright-test",
-      "source": {
-        "source": "github",
-        "repo": "theab10hd/zone-playwright-test"
-      },
-      "description": "Automate Playwright E2E testing with Claude Code, including test execution, failure analysis, regression testing, and PDF reports."
+      "displayName": "zOne Playwright Test",
+      "source": "./",
+      "description": "Study a feature's code, design end-to-end test cases, write the Playwright suite, run it, fix test defects, and produce a PDF report."
     }
   ]
 }

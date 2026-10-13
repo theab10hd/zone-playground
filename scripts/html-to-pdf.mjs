@@ -1,5 +1,5 @@
 // Renders the report HTML to PDF with the Chromium that @playwright/test already installed,
-// so the plugin adds no dependency. Run from frontend/ClientApp so the package resolves.
+// so the plugin adds no dependency. Run from the project's Playwright folder so the package resolves.
 // Usage: node <plugin>/scripts/html-to-pdf.mjs <report.html> <report.pdf>
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
@@ -12,7 +12,14 @@ if (!htmlPath || !pdfPath) {
 }
 
 const requireFromProject = createRequire(path.join(process.cwd(), 'package.json'));
-const { chromium } = requireFromProject('@playwright/test');
+let chromium;
+for (const pkg of ['@playwright/test', 'playwright']) {
+    try { ({ chromium } = requireFromProject(pkg)); break; } catch {}
+}
+if (!chromium) {
+    console.error('Playwright not found. Run this from the folder that has @playwright/test installed.');
+    process.exit(1);
+}
 
 const browser = await chromium.launch();
 try {
