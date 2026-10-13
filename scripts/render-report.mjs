@@ -5,7 +5,7 @@
 // The data format is documented by example in sample-report.json next to this file.
 import { createRequire } from 'node:module';
 import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
-import { pathToFileURL } from 'node:url';
+import { pathToFileURL, fileURLToPath } from 'node:url';
 import path from 'node:path';
 import os from 'node:os';
 
@@ -16,6 +16,9 @@ if (!jsonPath || !pdfPath) {
 }
 
 const r = JSON.parse(readFileSync(jsonPath, 'utf8'));
+
+// Brand mark for the first page; embedded so the temp HTML has no file dependency
+const logoDataUri = `data:image/png;base64,${readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), '../assets/logo.png')).toString('base64')}`;
 
 // ---- validate: refuse to render a report that would differ in shape ----
 const RESULTS = ['passed', 'skipped', 'failed', 'blocked', 'notRun'];
@@ -126,7 +129,14 @@ code,.mono { font-family:var(--mono); font-size:0.88em; }
 code { background:var(--code-bg); padding:1px 4px; border-radius:3px; overflow-wrap:anywhere; word-break:break-word; }
 .eyebrow { font:600 8pt var(--mono); text-transform:uppercase; letter-spacing:0.08em; color:var(--accent); }
 .preliminary { color:var(--fail); }
-header { display:grid; gap:10px; }
+header { display:grid; gap:10px; position:relative; }
+/* First-page badge: only the eyebrow and title share its rows, so only they leave room for it */
+header > .eyebrow, header h1 { padding-right:150px; }
+.brand { position:absolute; top:0; right:0; display:flex; align-items:center; gap:5px; }
+.brand img { width:22px; height:22px; border-radius:4px; }
+.brand .made { display:grid; line-height:1.1; color:#2b2f33; }
+.brand .made small { font-size:5.5pt; }
+.brand .made strong { font:600 7.5pt var(--display); }
 .meta { display:flex; flex-wrap:wrap; gap:4px 18px; color:var(--muted); font-size:9pt; }
 .verdict { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
 .tile { border:1px solid var(--line); border-radius:7px; padding:10px 12px; display:grid; gap:2px; break-inside:avoid; }
@@ -163,6 +173,7 @@ dt { color:var(--muted); } dd { margin:0; min-width:0; overflow-wrap:anywhere; }
 pre { margin:0; background:var(--code-bg); border-radius:5px; padding:8px 10px; font:8.5pt/1.5 var(--mono); white-space:pre-wrap; overflow-wrap:anywhere; }
 </style></head><body><div class="page">
 <header>
+  <div class="brand"><img src="${logoDataUri}" alt="zOne logo"><span class="made"><small>Made With</small><strong>zOne Playground.</strong></span></div>
   <span class="eyebrow">Playwright E2E · ${esc(r.feature)} · ${esc(r.date)}</span>
   ${preliminary ? `<span class="eyebrow preliminary">Preliminary: ${count.notRun} of ${r.planned} planned cases were not run</span>` : ''}
   <h1>${esc(title)}</h1>
