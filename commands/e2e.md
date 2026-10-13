@@ -11,9 +11,9 @@ Run the requested Playwright tests, diagnose every failure from real evidence, f
 
 ## 0. Locate the project
 
-- **Repo root**: the git root of the current working directory.
+- **Workspace root**: the current working directory, the folder Claude Code was opened in. It may hold several repos (for example `frontend/` and `backend/`); search all of them. Never write reports inside a single sub-repo unless the workspace root is that repo.
 - **Playwright dir**: the folder that holds `playwright.config.{ts,js,mjs,cjs}`. Find it with Glob `**/playwright.config.*`, excluding `node_modules`. If there are several, ask which one to use. If there are none, stop and say that this repo has no Playwright setup.
-- **Reports dir**: `<repo root>/reports/`. Create it if it is missing.
+- **Reports dir**: `C:\zOne Test Reports\` (on macOS or Linux, `~/zOne Test Reports/`). Create it if it is missing. The path contains spaces, so always quote it.
 
 All the commands below run in the Playwright dir.
 

@@ -5,7 +5,7 @@ A Claude Code plugin with two commands for Playwright E2E testing:
 - `/zone-playwright-test:feature` takes a feature description, studies the code, designs end-to-end cases, writes the suite, runs it, fixes test defects and produces a PDF report.
 - `/zone-playwright-test:e2e` runs an existing suite, group or case, diagnoses every failure from real Playwright evidence, fixes genuine test defects, reruns, and produces a PDF report.
 
-They work in any repo that has a `playwright.config.*`. Open Claude Code in that repo before you run them.
+They work in any project that has a `playwright.config.*`. Open Claude Code at the top of the project. If the frontend and backend are separate repos, open the folder that holds both, so the commands can trace the feature across them.
 
 ## Install
 
@@ -29,7 +29,7 @@ claude --plugin-dir <path-to-clone>
 - The app under test is reachable at the config's `baseURL`, or the config's `webServer` starts it.
 - `npm install` has been run in the Playwright folder, so `@playwright/test` and its Chromium are present. The PDF is rendered with that Chromium, and the plugin adds no dependency.
 - Auth: whatever your setup project needs, such as a fresh storage-state file or credentials in environment variables that you set in your own shell. The commands never ask for or type a password.
-- Optional: [graphify](https://github.com/deadmade/dead-claude-skills) with a built `graphify-out/graph.json` at the repo root. It makes the feature-discovery step faster. Without it, the plugin falls back to code search.
+- Optional: [graphify](https://github.com/deadmade/dead-claude-skills) with a built `graphify-out/graph.json` at the workspace root. It makes the feature-discovery step faster. Without it, the plugin falls back to code search.
 
 ## Usage
 
@@ -72,7 +72,7 @@ Example: `/zone-playwright-test:feature lease region district filter - users pic
 
 ## Outputs
 
-- `<repo root>/reports/<Feature-Name>-Test-Report.pdf`
-- `<repo root>/reports/<project>-e2e-run.json`: the raw results that every count in the report comes from
+- `C:\zOne Test Reports\<Feature-Name>-Test-Report.pdf` (on macOS or Linux, `~/zOne Test Reports/`)
+- `C:\zOne Test Reports\<project>-e2e-run.json`: the raw results that every count in the report comes from
 - `<playwright folder>/playwright-report/index.html`
 - `<playwright folder>/test-results/`: screenshots, traces and error context. These can contain tokens, so do not share them.

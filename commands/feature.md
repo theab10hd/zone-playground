@@ -13,13 +13,13 @@ Flags: `--headed` adds `--headed` to every Playwright command. `--no-report` ski
 
 If the request names no recognisable feature, ask one question to pin it down, then continue.
 
-Locate the repo root, Playwright dir and reports dir as described in step 0 of the `e2e` command in this plugin (`${CLAUDE_PLUGIN_ROOT}/commands/e2e.md`; if that path isn't expanded, use Glob `**/zone-playwright-test/**/commands/e2e.md` under `~/.claude/plugins/`). If the repo has no Playwright setup, stop and say so; do not install one unasked.
+Locate the workspace root, Playwright dir and reports dir as described in step 0 of the `e2e` command in this plugin (`${CLAUDE_PLUGIN_ROOT}/commands/e2e.md`; if that path isn't expanded, use Glob `**/zone-playwright-test/**/commands/e2e.md` under `~/.claude/plugins/`). If the repo has no Playwright setup, stop and say so; do not install one unasked.
 
 ## 1. Find the feature's code
 
-Work from the repo root. Locate every layer the feature touches: UI components, routes, client services or API calls, backend controllers and endpoints, services, data models, and permissions.
+Work from the workspace root. Locate every layer the feature touches: UI components, routes, client services or API calls, backend controllers and endpoints, services, data models, and permissions.
 
-- **Graphify first.** If `<repo root>/graphify-out/graph.json` exists and the `graphify` skill is available, use it from the repo root. Run `graphify query "<feature>"` for the broad picture, `graphify path "<UI component>" "<endpoint or table>"` to trace the request path, and `graphify explain "<node>"` for any central node you don't recognise. Treat INFERRED and AMBIGUOUS edges as leads, and confirm them in the code.
+- **Graphify first.** If `<workspace root>/graphify-out/graph.json` exists and the `graphify` skill is available, use it from the workspace root. Run `graphify query "<feature>"` for the broad picture, `graphify path "<UI component>" "<endpoint or table>"` to trace the request path, and `graphify explain "<node>"` for any central node you don't recognise. Treat INFERRED and AMBIGUOUS edges as leads, and confirm them in the code.
 - **No graph, or gaps in it.** Use Grep and Glob on feature keywords, route paths, API URLs and component names. For a feature that spans many files, dispatch `Explore` agents in parallel, one per layer (frontend, API, data), and ask each for file paths and relationships, not file dumps. Do not build a full graph unasked, because it is slow. If graphify is installed, say in the final response that building a graph would speed up later runs.
 - Read the files you found. Do not design tests from file names.
 
