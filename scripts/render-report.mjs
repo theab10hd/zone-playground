@@ -123,7 +123,7 @@ h1 { font-size:22pt; line-height:1.15; } h2 { font-size:14pt; } h3 { font-size:1
 h2 { break-after:avoid; }
 p { margin:0; }
 code,.mono { font-family:var(--mono); font-size:0.88em; }
-code { background:var(--code-bg); padding:1px 4px; border-radius:3px; }
+code { background:var(--code-bg); padding:1px 4px; border-radius:3px; overflow-wrap:anywhere; word-break:break-word; }
 .eyebrow { font:600 8pt var(--mono); text-transform:uppercase; letter-spacing:0.08em; color:var(--accent); }
 .preliminary { color:var(--fail); }
 header { display:grid; gap:10px; }
@@ -154,8 +154,10 @@ td.time { font-family:var(--mono); white-space:nowrap; color:var(--muted); text-
 .finding.data { border-left-color:var(--skip); } .finding.perf { border-left-color:var(--accent); } .finding.test { border-left-color:var(--grey); }
 .finding .sev { font:600 7.5pt var(--mono); text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); }
 ul,ol { margin:0; padding-left:18px; display:grid; gap:3px; }
-.cols { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
-.card { border:1px solid var(--line); border-radius:7px; padding:10px 14px; display:grid; gap:6px; min-width:0; break-inside:avoid; }
+/* Feature map and run data cards stack full width; side-by-side cards overlapped on long code paths. */
+.cols { display:flex; flex-direction:column; gap:10px; }
+.card { border:1px solid var(--line); border-radius:7px; padding:10px 14px; min-width:0; overflow-wrap:anywhere; }
+.card > * + * { margin-top:6px; } .card h3 { break-after:avoid; } .card li, .card dt, .card dd { break-inside:avoid; }
 dl { margin:0; display:grid; grid-template-columns:auto 1fr; gap:3px 12px; font-size:9pt; }
 dt { color:var(--muted); } dd { margin:0; min-width:0; overflow-wrap:anywhere; }
 pre { margin:0; background:var(--code-bg); border-radius:5px; padding:8px 10px; font:8.5pt/1.5 var(--mono); white-space:pre-wrap; overflow-wrap:anywhere; }
