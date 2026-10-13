@@ -59,7 +59,14 @@ If the config has no projects, drop `--project`. Before running, confirm with `-
 
 ## 4. Execute
 
-Run the command from step 2, adding `--headed` if requested. Add `--reporter=list,html,json` and set `PLAYWRIGHT_JSON_OUTPUT_NAME=<reports dir>/<project>-e2e-run.json`. In bash, prefix the command with the variable. In PowerShell, set `$env:PLAYWRIGHT_JSON_OUTPUT_NAME` first. The CLI flag replaces the config's reporters, so `html` must be listed again. The JSON stays outside `test-results/`, which Playwright clears at the start of each run. Long suites can take many minutes, so run them in the background and wait for completion; do not poll with sleeps.
+Run the command from step 2, adding `--headed` if requested. Add `--reporter=list,html,json` and set `PLAYWRIGHT_JSON_OUTPUT_NAME=<reports dir>/<project>-e2e-run.json`. In bash, prefix the command with the variable. In PowerShell, set `$env:PLAYWRIGHT_JSON_OUTPUT_NAME` first. The CLI flag replaces the config's reporters, so `html` must be listed again. The JSON stays outside `test-results/`, which Playwright clears at the start of each run. Long suites can take many minutes, so run them in the background; do not poll with sleeps.
+
+**Live updates.** This applies to every run, including the reruns in step 7. While the tests run, watch the streamed output from the `list` reporter. Use the Monitor tool when it is available, and otherwise read the background output each time it reports progress. Post a short chat line as each test finishes:
+
+- `✓ A1 - <title> (1.2s)` for passed, `↷ A4 - <title> (skipped: <reason>)` for skipped, and `✗ B2 - <title>` plus the first line of the error for failed.
+- After every 5 finished tests, and again at the end, add a running tally: `12/40 · 9 passed · 1 skipped · 2 failed`.
+
+The list reporter marks each test `✓` (passed), `✘` (failed) or `-` (skipped), and a test that retries shows up more than once; count only its last attempt. Use the live lines for progress only, because the final counts must still come from the JSON. Never put tokens, cookies or full stack traces in a live line.
 
 Take status, duration and error from the JSON. Map Playwright statuses as follows: `passed` → Passed, `failed`/`timedOut` → Failed, `skipped` (with its annotation or reason) → Skipped, not started because a dependency failed (for example an auth setup) → Blocked, and not reached → Not Run. Keep this first-run result as **Initial**.
 

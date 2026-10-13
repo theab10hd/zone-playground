@@ -77,7 +77,7 @@ Example: `/zone-playwright-test:feature lease region district filter - users pic
 
 1. It finds the Playwright config, then resolves the target to a project and an exact `--grep` or file filter, and checks the selection with `--list`.
 2. It confirms the app is reachable and auth is ready. If not, it reports the blocker and stops.
-3. It runs the tests with list, HTML and JSON reporters. Counts come only from the JSON.
+3. It runs the tests with list, HTML and JSON reporters, and posts a live line as each test passes, is skipped or fails, with a running tally. The final counts come only from the JSON.
 4. It classifies each failure as an application defect, test defect, test data issue, environment issue or flaky test, using the error, `error-context.md`, screenshots and the code under test.
 5. It fixes test defects with minimal edits. It never weakens assertions, adds skips or edits application code to hide a defect.
 6. It reruns the fixed cases, their group and every case that shares a changed helper, and keeps the Initial and Final results separate.
