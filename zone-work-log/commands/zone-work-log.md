@@ -1,6 +1,6 @@
 ---
 description: "zOffice - draft today's time sheet from your Claude Code sessions for a project, then post it to zOffice Daily Activities"
-argument-hint: "<project name> [YYYY-MM-DD] [--start <time>] [--break <from>-<to>]... | clear"
+argument-hint: "<project name> [YYYY-MM-DD] [--start <time>] [--break <from>-<to>]... [--wfh] | clear"
 ---
 
 # zOffice work log
@@ -42,6 +42,7 @@ Company-specific values live only in `~/.zone-work-log/config.json` on the user'
 - **Date**: the first `YYYY-MM-DD` in `$ARGUMENTS`, otherwise today.
 - **Breaks**: each `--break <from>-<to>` (it may repeat). Accept 12- or 24-hour times with or without a space or minutes: `1:00 PM-1:45 PM`, `1pm-1:45pm`, `13:00-13:45`. A break whose end is not after its start, or that you cannot read, is an error: say which one and stop. Remove each `--break` and its range before reading the project.
 - **Start**: `--start <time>` (once), the time the user arrived and started working, in the same formats (`9:15 AM`, `9:15am`, `09:15`). It is an error if it repeats or cannot be read. Remove it before reading the project.
+- **Work from home**: `--wfh` marks every entry as Work From Home. Remove it before reading the project.
 - **Times without AM/PM** (in `--start` or `--break`): read 7 to 11 as AM and 12 and 1 to 6 as PM (`--break 12:30 - 1:00` is 12:30 PM to 1:00 PM), and say how you read them.
 - **Project**: the rest of `$ARGUMENTS`. Match it to a project key in `options`, ignoring case and spacing, and allowing a partial name ("acme" matches "zOne Acme" when it is the only key containing it). An exact match wins over a partial one. If it matches several keys, list them and stop; if it matches none, say so, list the closest keys, and stop.
 - **No project given**: pick the project per entry with `projectRules`, then `defaultProject`. If neither exists, ask the user for the project and stop.
@@ -76,7 +77,7 @@ Read the prompts and turn the day into entries:
 
 Post in chat, before anything is saved:
 
-1. **Entries**: a numbered table (#, Start, End, Module, Activity, Description) with the project and the total hours. Show each break as an unnumbered **Break** row in its time position (it is not posted and does not count toward the total). When `--start` moved the first entry, say so under the table, with the session start it replaced.
+1. **Entries**: a numbered table (#, Start, End, Module, Activity, Description) with the project and the total hours, and whether the entries are marked Work From Home. Show each break as an unnumbered **Break** row in its time position (it is not posted and does not count toward the total). When `--start` moved the first entry, say so under the table, with the session start it replaced.
 2. **Activities**: every label in the project's `activities`, marking the ones the entries use, so the user can swap one by number ("3 → <activity>").
 
 Ask the user to confirm or edit. Apply their edits, post the updated table, and ask again. Do not write the entries file or give the run command until the user clearly confirms. Nothing reaches zOffice without that confirmation, because the posting script only reads the file.
@@ -89,7 +90,7 @@ Write the confirmed entries as a JSON array to `~/.zone-work-log/entries/<date>.
 [{ "project": "<project>", "module": "<module>", "activity": "<activity>", "start": "9:40 AM", "end": "10:30 AM", "description": "...", "workFromHome": false }]
 ```
 
-Set `workFromHome` only if the user said so.
+Set `workFromHome` to `true` on every entry when `--wfh` was given, or when the user asked for it while editing; otherwise `false`.
 
 If `${CLAUDE_PLUGIN_ROOT}/scripts/node_modules/playwright-core` is missing, run `npm install --no-audit --no-fund` in `${CLAUDE_PLUGIN_ROOT}/scripts` (this needs no credentials). The script drives the installed Google Chrome; no browser download.
 

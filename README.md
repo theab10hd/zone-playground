@@ -160,6 +160,8 @@ Add `--break <from>-<to>` for each break, for example `/zone-work-log:zone-work-
 
 Add `--start <time>` with the time you arrived and started working, for example `/zone-work-log:zone-work-log acme --start 9:15 AM --break 12:30 PM-1:00 PM`. Sessions only show when Claude was in use, so without it the day starts at your first session. With it, the first entry starts at that time, and work before the first session counts toward that entry. A start later than your first session trims the entries before it. Times without AM/PM read 7–11 as AM and 12 and 1–6 as PM.
 
+Add `--wfh` to tick **Work From Home** on every entry, for example `/zone-work-log:zone-work-log acme --start 9:15 AM --wfh`.
+
 1. It reads that day's sessions from `~/.claude/projects/` (today by default): each session's title, folder, active time blocks (a pause of 20+ minutes starts a new block) and your prompts with their times.
 2. It drafts entries from those blocks only: no invented work for gaps, times rounded to 5 minutes, and parallel sessions merged into one slot so nothing overlaps. It picks each entry's module and activity itself from what you worked on, using only the labels zOffice offers for that project.
 3. It lists the entries in chat as a numbered table with the total hours, plus every activity the project offers, so you can swap one by number ("3 → Review"). It waits for you to confirm or edit.
