@@ -60,7 +60,24 @@ If the config has no projects, drop `--project`. Before running, confirm with `-
 
 ## 4. Execute
 
-Run the command from step 2, adding `--headed` if requested. Add `--reporter=list,html,json` and set `PLAYWRIGHT_JSON_OUTPUT_NAME=<work dir>/<project>-e2e-run.json`. In bash, prefix the command with the variable. In PowerShell, set `$env:PLAYWRIGHT_JSON_OUTPUT_NAME` first. The CLI flag replaces the config's reporters, so `html` must be listed again. The JSON stays outside `test-results/`, which Playwright clears at the start of each run. Long suites can take many minutes, so run them in the background; do not poll with sleeps.
+### Choose the worker count
+
+Run as many workers as is safe, so the run finishes fast. Decide from the code you read in step 2, not by guessing:
+
+- **Keep 1 worker** if any of these holds for the selected tests:
+  - a `test.describe.serial`, `mode: 'serial'`, or tests that depend on an earlier test's result or on shared `let` variables
+  - tests that change global state another test reads, such as display settings, user preferences, feature flags, or shared records with fixed names
+  - one storage state shared across workers where the session can't survive parallel use. Signs of this are single-use refresh tokens, session-refresh helpers, or comments warning about one run or one context at a time.
+  - a cleanup spec that deletes data other files may still be using, or a config that sets `workers: 1` on purpose (read any comment next to it)
+  - the user asked for headed mode and wants to watch one browser
+- **Otherwise, go parallel.** Use `--workers=N`, where N is the smallest of: the number of spec files that are independent of each other, half the CPU cores (at least 2), and 4. If only some files are unsafe, run those in their own command with `--workers=1`, and run the rest in parallel. Never set `fullyParallel` or change the config file for speed.
+- Reruns of one or two fixed tests use `--workers=1`.
+
+State the worker count and the reason in chat before the run, and record it in the report data (`scope.workers`). If a parallel run fails in a way that a serial run would not (session lost, data collisions), classify those failures as environment or test defects caused by parallelism. Rerun them with `--workers=1`, and keep 1 worker for that suite from then on.
+
+### Run
+
+Run the command from step 2, with the chosen `--workers`, adding `--headed` if requested. Add `--reporter=list,html,json` and set `PLAYWRIGHT_JSON_OUTPUT_NAME=<work dir>/<project>-e2e-run.json`. In bash, prefix the command with the variable. In PowerShell, set `$env:PLAYWRIGHT_JSON_OUTPUT_NAME` first. The CLI flag replaces the config's reporters, so `html` must be listed again. The JSON stays outside `test-results/`, which Playwright clears at the start of each run. Long suites can take many minutes, so run them in the background; do not poll with sleeps.
 
 **Live updates.** This applies to every run, including the reruns in step 7. While the tests run, watch the streamed output from the `list` reporter. Use the Monitor tool when it is available, and otherwise read the background output each time it reports progress. Post a short chat line as each test finishes:
 

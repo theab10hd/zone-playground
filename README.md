@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/logo.jpg" alt="zOne logo" width="96" height="96"></p>
+
 # zOne Playground
 
 AI tools for zOne workflows that make your code more powerful.
@@ -81,11 +83,15 @@ Examples:
 
 1. It finds the Playwright config, then resolves the target to a project and an exact `--grep` or file filter, and checks the selection with `--list`.
 2. It confirms the app is reachable and auth is ready. If not, it reports the blocker and stops.
-3. It runs the tests with list, HTML and JSON reporters, and posts a live line as each test passes, is skipped or fails, with a running tally. The final counts come only from the JSON.
+3. It picks the fastest safe worker count (see below), runs the tests with list, HTML and JSON reporters, and posts a live line as each test passes, is skipped or fails, with a running tally. The final counts come only from the JSON.
 4. It classifies each failure as an application defect, test defect, test data issue, environment issue or flaky test, using the error, `error-context.md`, screenshots and the code under test.
 5. It fixes test defects with minimal edits. It never weakens assertions, adds skips or edits application code to hide a defect.
 6. It reruns the fixed cases, their group and every case that shares a changed helper, and keeps the Initial and Final results separate.
 7. It writes the report data as JSON, and the plugin's renderer turns it into the PDF: executive summary, grouped case results, findings, run data, test fixes, coverage gaps and rerun instructions. Every report uses the same fixed design. The renderer rejects incomplete data and adds PRELIMINARY to the title by itself if any planned case did not run.
+
+### Workers
+
+Before each run, the command checks whether the selected tests can safely run in parallel. It raises `--workers` only when it finds no side effects: no serial groups, no state shared between tests, and no shared settings or records that one test changes and another reads. It also checks that parallel tests can't sign each other out by sharing one session. When in doubt it uses 1 worker, and the report states the worker count and why it was chosen.
 
 ## Outputs
 
