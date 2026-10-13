@@ -1,7 +1,8 @@
 {
   "name": "zoffice",
   "displayName": "zOffice",
-  "version": "1.7.0",
+  "icon": "./assets/logo.png",
+  "version": "1.7.1",
   "description": "Turn today's Claude Code sessions into zOffice time sheet entries, then post them to the Daily Activities page with Playwright",
   "author": { "name": "Abhijith G" },
   "repository": "https://github.com/theab10hd/zone-playground"
