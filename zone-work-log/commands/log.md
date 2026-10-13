@@ -1,6 +1,6 @@
 ---
 description: "zOffice - draft today's time sheet from your Claude Code sessions for a project, then post it to zOffice Daily Activities"
-argument-hint: "<project name> [YYYY-MM-DD] [--start <time>] [--break <from>-<to>]... [--wfh] | clear"
+argument-hint: "<project name> [YYYY-MM-DD] [--start <time>] [--break <from>-<to>]... [--wfh]"
 ---
 
 # zOffice work log
@@ -33,12 +33,7 @@ Company-specific values live only in `~/.zone-work-log/config.json` on the user'
 
 ## 1. Parse the arguments
 
-- **`clear`** as the only argument: delete today's time sheet instead of drafting one. Skip steps 2 to 4. Do the dependency install from step 5, then give the user this command to run in their own terminal, and stop:
-  ```bash
-  node "<plugin>/scripts/post-timesheet.mjs" --clear --headed
-  ```
-  Say plainly that it deletes **every** entry on today's zOffice page, including ones added by hand, and that this cannot be undone. It deletes straight away, with no prompt, and prints each entry it removes. Today's entries file in `~/.zone-work-log/entries/` is kept, so the same entries can be posted again with the normal command. Never run it yourself.
-
+- **`clear`** as the only argument: tell the user that clearing moved to `/zone-work-log:clear`, and stop.
 - **Date**: the first `YYYY-MM-DD` in `$ARGUMENTS`, otherwise today.
 - **Breaks**: each `--break <from>-<to>` (it may repeat). Accept 12- or 24-hour times with or without a space or minutes: `1:00 PM-1:45 PM`, `1pm-1:45pm`, `13:00-13:45`. A break whose end is not after its start, or that you cannot read, is an error: say which one and stop. Remove each `--break` and its range before reading the project.
 - **Start**: `--start <time>` (once), the time the user arrived and started working, in the same formats (`9:15 AM`, `9:15am`, `09:15`). It is an error if it repeats or cannot be read. Remove it before reading the project.
@@ -79,7 +74,8 @@ Read the prompts and turn the day into entries:
 Post in chat, before anything is saved:
 
 1. **Entries**: a numbered table (#, Start, End, Module, Activity, Description) with the project and the total hours, and whether the entries are marked Work From Home. Show each break as an unnumbered **Break** row in its time position (it is not posted and does not count toward the total). When `--start` moved the first entry, say so under the table, with the session start it replaced.
-2. **Activities**: every label in the project's `activities`, marking the ones the entries use, so the user can swap one by number ("3 → <activity>").
+2. **Totals**: always show, right under the table, today's total work time and this week's total work time, each against its minimum (6 hours a day, 40 hours a week) with how much more is needed or "minimum met". Today is the sum of these entries. This week is today plus every other day from Monday up to the date in `~/.zone-work-log/entries/<YYYY-MM-DD>.json` (sum each entry's end minus start). Say the week covers only days logged with this command; the posting script prints zOffice's own totals, which include entries added by hand. Show them again with every updated table.
+3. **Activities**: every label in the project's `activities`, marking the ones the entries use, so the user can swap one by number ("3 → <activity>").
 
 Ask the user to confirm or edit. Apply their edits, post the updated table, and ask again. Do not write the entries file or give the run command until the user clearly confirms. Nothing reaches zOffice without that confirmation, because the posting script only reads the file.
 
@@ -97,7 +93,7 @@ If `${CLAUDE_PLUGIN_ROOT}/scripts/node_modules/playwright-core` is missing, run 
 
 zOffice only adds to today's page, so if the date is not today, say the file was written and that the entries must be posted on that day's page by hand.
 
-Otherwise give the user this command, with the real plugin path filled in, and stop. With no file argument the script posts today's file from `~/.zone-work-log/entries/`, so the command is the same every day:
+Otherwise give the user this command, with the real plugin path filled in, repeat today's and this week's totals from step 4 below it, and stop. With no file argument the script posts today's file from `~/.zone-work-log/entries/`, so the command is the same every day:
 
 ```bash
 node "<plugin>/scripts/post-timesheet.mjs" --headed

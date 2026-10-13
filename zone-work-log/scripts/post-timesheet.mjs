@@ -55,7 +55,7 @@ if (!config.baseUrl) {
 const baseUrl = config.baseUrl.replace(/\/+$/, '');
 
 if (entriesPath && !fs.existsSync(entriesPath)) {
-  console.error(`No entries file at ${entriesPath}. Run /zone-work-log:zone-work-log <project> first.`);
+  console.error(`No entries file at ${entriesPath}. Run /zone-work-log:log <project> first.`);
   process.exit(1);
 }
 const entries = entriesPath === null ? [] : JSON.parse(fs.readFileSync(entriesPath, 'utf8'));

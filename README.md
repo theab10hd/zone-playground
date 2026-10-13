@@ -131,7 +131,7 @@ On macOS or Linux, add `export ZOFFICE_USERNAME=...` and `export ZOFFICE_PASSWOR
 
 Company-specific values live only on your machine, in `~/.zone-work-log/config.json`. The plugin itself holds no portal address, project list or client names.
 
-1. Run `/zone-work-log:zone-work-log`. It asks for your zOffice URL (the address before `/Account/Login`) and writes the config.
+1. Run `/zone-work-log:log`. It asks for your zOffice URL (the address before `/Account/Login`) and writes the config.
 2. In your own terminal, save the dropdown options you can pick in zOffice:
    ```bash
    node "<plugin>/scripts/post-timesheet.mjs" --save-options
@@ -151,20 +151,20 @@ Company-specific values live only on your machine, in `~/.zone-work-log/config.j
 ## Usage
 
 ```
-/zone-work-log:zone-work-log <project name> [YYYY-MM-DD]
+/zone-work-log:log <project name> [YYYY-MM-DD]
 ```
 
-For example `/zone-work-log:zone-work-log acme` for a project named "zOne Acme". The project name can be partial, as long as it matches one project in your saved options.
+For example `/zone-work-log:log acme` for a project named "zOne Acme". The project name can be partial, as long as it matches one project in your saved options.
 
-Add `--break <from>-<to>` for each break, for example `/zone-work-log:zone-work-log acme --break 1:00 PM-1:45 PM`. 12- and 24-hour times both work (`1pm-1:45pm`, `13:00-13:45`), and the flag can repeat. No entry is filed during a break: work that spans one is split into before and after. zOffice has no break activity and counts only filed entries as hours, so the break is never posted. It shows as its own row in the table for review.
+Add `--break <from>-<to>` for each break, for example `/zone-work-log:log acme --break 1:00 PM-1:45 PM`. 12- and 24-hour times both work (`1pm-1:45pm`, `13:00-13:45`), and the flag can repeat. No entry is filed during a break: work that spans one is split into before and after. zOffice has no break activity and counts only filed entries as hours, so the break is never posted. It shows as its own row in the table for review.
 
-Add `--start <time>` with the time you arrived and started working, for example `/zone-work-log:zone-work-log acme --start 9:15 AM --break 12:30 PM-1:00 PM`. Sessions only show when Claude was in use, so without it the day starts at your first session. With it, the first entry starts at that time, and work before the first session counts toward that entry. A start later than your first session trims the entries before it. Times without AM/PM read 7–11 as AM and 12 and 1–6 as PM.
+Add `--start <time>` with the time you arrived and started working, for example `/zone-work-log:log acme --start 9:15 AM --break 12:30 PM-1:00 PM`. Sessions only show when Claude was in use, so without it the day starts at your first session. With it, the first entry starts at that time, and work before the first session counts toward that entry. A start later than your first session trims the entries before it. Times without AM/PM read 7–11 as AM and 12 and 1–6 as PM.
 
-Add `--wfh` to tick **Work From Home** on every entry, for example `/zone-work-log:zone-work-log acme --start 9:15 AM --wfh`.
+Add `--wfh` to tick **Work From Home** on every entry, for example `/zone-work-log:log acme --start 9:15 AM --wfh`.
 
 1. It reads that day's sessions from `~/.claude/projects/` (today by default): each session's title, folder, active time blocks (a pause of 20+ minutes starts a new block) and your prompts with their times.
 2. It drafts entries from those blocks, with times rounded to 5 minutes and parallel sessions merged into one slot so nothing overlaps. Entries run back to back: a pause between sessions is added to the entry before it, so the only gaps are your `--break` times. It picks each entry's module and activity itself from what you worked on, using only the labels zOffice offers for that project.
-3. It lists the entries in chat as a numbered table with the total hours, plus every activity the project offers, so you can swap one by number ("3 → Review"). It waits for you to confirm or edit.
+3. It lists the entries in chat as a numbered table, with today's and this week's total work time against the 6-hour and 40-hour minimums (the week counts only days logged with this command), plus every activity the project offers, so you can swap one by number ("3 → Review"). It waits for you to confirm or edit.
 4. Only after you confirm, it saves the entries to `~/.zone-work-log/entries/<date>.json` and gives you the command to post them. With no file argument the script posts today's file, so the command is the same every day:
    ```bash
    node "<plugin>/scripts/post-timesheet.mjs" --headed
@@ -181,7 +181,7 @@ This week: 9h 00m filed of 40h 00m minimum - 31h 00m more needed
 ## Clear today's time sheet
 
 ```
-/zone-work-log:zone-work-log clear
+/zone-work-log:clear
 ```
 
 It gives you the command to delete every entry on today's zOffice page, including ones you added by hand:
