@@ -1,0 +1,16 @@
+{
+  "name": "zone-playwright-marketplace",
+  "owner": {
+    "name": "theab10hd"
+  },
+  "plugins": [
+    {
+      "name": "zone-playwright-test",
+      "source": {
+        "source": "github",
+        "repo": "theab10hd/zone-playwright-test"
+      },
+      "description": "Automate Playwright E2E testing with Claude Code, including test execution, failure analysis, regression testing, and PDF reports."
+    }
+  ]
+}
