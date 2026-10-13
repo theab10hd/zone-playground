@@ -1,0 +1,6 @@
+{
+  "name": "zone-playwright-test",
+  "version": "0.1.0",
+  "description": "Run, diagnose, fix and report zOne Playwright E2E tests by feature, group or case, with a PDF report",
+  "author": { "name": "Abhijith G" }
+}
