@@ -10,7 +10,7 @@ Request: `$ARGUMENTS`
 Take a feature description and carry it all the way through: find and study the code, design end-to-end test cases, list them, write the suite, run it, fix test defects, rerun, and report. Follow the project's `CLAUDE.md` if it has one. Never fabricate a result.
 
 Flags:
-- `auto` as the **first word** (`/zone-playwright-test:feature auto <feature>`): run end to end without stopping. Only the first word counts, so "auto" or "auto-fill" later in the feature description never switches it on. Strip it from the feature text. Show the test cases in chat, then write and run them straight away.
+- `auto` as the **first word** (`/zone-test:feature auto <feature>`): run end to end without stopping. Only the first word counts, so "auto" or "auto-fill" later in the feature description never switches it on. Strip it from the feature text. Show the test cases in chat, then write and run them straight away.
 - No `auto`: stop after showing the test cases and wait for the user to confirm them (step 3). This is the default.
 - `--headed` adds `--headed` to every Playwright command. `--no-report` skips the PDF.
 
@@ -18,7 +18,7 @@ Everything else is the feature name and details. Treat any limit the user gives,
 
 If the request names no recognisable feature, ask one question to pin it down, then continue.
 
-Locate the workspace root, Playwright dir, reports dir and work dir as described in step 0 of the `e2e` command in this plugin (`${CLAUDE_PLUGIN_ROOT}/commands/e2e.md`; if that path isn't expanded, use Glob `**/zone-playwright-test/**/commands/e2e.md` under `~/.claude/plugins/`). If the repo has no Playwright setup, stop and say so; do not install one unasked.
+Locate the workspace root, Playwright dir, reports dir and work dir as described in step 0 of the `e2e` command in this plugin (`${CLAUDE_PLUGIN_ROOT}/commands/e2e.md`; if that path isn't expanded, use Glob `**/zone-test/**/commands/e2e.md` under `~/.claude/plugins/`). If the repo has no Playwright setup, stop and say so; do not install one unasked.
 
 ## 1. Find the feature's code
 

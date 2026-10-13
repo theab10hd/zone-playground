@@ -14,7 +14,7 @@ Run the requested Playwright tests, diagnose every failure from real evidence, f
 - **Workspace root**: the current working directory, the folder Claude Code was opened in. It may hold several repos (for example `frontend/` and `backend/`); search all of them. Never write reports inside a single sub-repo unless the workspace root is that repo.
 - **Playwright dir**: the folder that holds `playwright.config.{ts,js,mjs,cjs}`. Find it with Glob `**/playwright.config.*`, excluding `node_modules`. If there are several, ask which one to use. If there are none, stop and say that this repo has no Playwright setup.
 - **Reports dir**: `C:\zOne Test Reports\` (on macOS or Linux, `~/zOne Test Reports/`). Create it if it is missing. **Only the final PDF goes here**, never JSON or any other file. The path contains spaces, so always quote it.
-- **Work dir**: `<scratchpad>/zone-playwright-test/<project>/`, using your scratchpad directory if you have one, and otherwise the system temp folder. Every intermediate file goes here: the Playwright results JSON for each run (Initial, reruns), the report data and anything else you write along the way.
+- **Work dir**: `<scratchpad>/zone-test/<project>/`, using your scratchpad directory if you have one, and otherwise the system temp folder. Every intermediate file goes here: the Playwright results JSON for each run (Initial, reruns), the report data and anything else you write along the way.
 
 All the commands below run in the Playwright dir.
 
@@ -119,7 +119,7 @@ Rerun the fixed tests first, then the rest of their `describe` group and every o
 
 Never write the report HTML yourself. The plugin's renderer holds the one fixed design, so every report looks the same. Your job is to supply the data.
 
-1. Read `${CLAUDE_PLUGIN_ROOT}/scripts/sample-report.json`. If `${CLAUDE_PLUGIN_ROOT}` is not expanded, find it with Glob `**/zone-playwright-test/**/scripts/sample-report.json` under `~/.claude/plugins/`. It is the data format, by example. Use the same keys and no others.
+1. Read `${CLAUDE_PLUGIN_ROOT}/scripts/sample-report.json`. If `${CLAUDE_PLUGIN_ROOT}` is not expanded, find it with Glob `**/zone-test/**/scripts/sample-report.json` under `~/.claude/plugins/`. It is the data format, by example. Use the same keys and no others.
 2. Write `<work dir>/<Feature-Name>-report-data.json` in that format:
    - `planned` is the `--list` count. `initial` holds the Initial counts from the first run's JSON.
    - `groups` has one entry per `describe` group, and every executed test is one case row, with its **Final** result (`passed`, `skipped`, `failed`, `blocked` or `notRun`), its time and, for skipped or blocked cases, its `reason`.

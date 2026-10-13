@@ -1,4 +1,4 @@
-<h1><img src="zone-playwright-test/assets/logo.png" alt="zOne logo" width="40" height="40" align="top"> zOne Playground</h1>
+<h1><img src="zone-test/assets/logo.png" alt="zOne logo" width="40" height="40" align="top"> zOne Playground</h1>
 
 AI tools for zOne workflows that make your code more powerful.
 
@@ -16,8 +16,8 @@ This is a growing set of Claude Code plugins that take the busywork out of the d
 
 A Claude Code plugin with two commands for Playwright E2E testing:
 
-- `/zone-playwright-test:feature` takes a feature description, studies the code, designs end-to-end cases, writes the suite, runs it, fixes test defects and produces a PDF report.
-- `/zone-playwright-test:e2e` runs an existing suite, group or case, diagnoses every failure from real Playwright evidence, fixes genuine test defects, reruns, and produces a PDF report.
+- `/zone-test:feature` takes a feature description, studies the code, designs end-to-end cases, writes the suite, runs it, fixes test defects and produces a PDF report.
+- `/zone-test:e2e` runs an existing suite, group or case, diagnoses every failure from real Playwright evidence, fixes genuine test defects, reruns, and produces a PDF report.
 
 They work in any project that has a `playwright.config.*`. Open Claude Code at the top of the project. If the frontend and backend are separate repos, open the folder that holds both, so the commands can trace the feature across them.
 
@@ -27,7 +27,7 @@ From any Claude Code session:
 
 ```
 /plugin marketplace add https://github.com/theab10hd/zone-playground.git
-/plugin install zone-playwright-test@zone-playground
+/plugin install zone-test@zone-playground
 ```
 
 You can also add the marketplace in the desktop app under **Plugins**. Restart Claude Code, or run `/reload-plugins`, to pick up the commands.
@@ -35,7 +35,7 @@ You can also add the marketplace in the desktop app under **Plugins**. Restart C
 To try it for one session without installing, clone the repo and run:
 
 ```bash
-claude --plugin-dir <path-to-clone>/zone-playwright-test
+claude --plugin-dir <path-to-clone>/zone-test
 ```
 
 ## Prerequisites
@@ -50,12 +50,12 @@ claude --plugin-dir <path-to-clone>/zone-playwright-test
 ### New feature: study the code, write the suite, run it and report
 
 ```
-/zone-playwright-test:feature [auto] <feature name and details> [--headed] [--no-report]
+/zone-test:feature [auto] <feature name and details> [--headed] [--no-report]
 ```
 
 Examples:
-- `/zone-playwright-test:feature lease region district filter - users pick region then district, grid and export follow the filter`: designs the cases and waits for your go-ahead.
-- `/zone-playwright-test:feature auto lease region district filter only 10 cases`: designs 10 cases, shows them, then writes and runs them without stopping.
+- `/zone-test:feature lease region district filter - users pick region then district, grid and export follow the filter`: designs the cases and waits for your go-ahead.
+- `/zone-test:feature auto lease region district filter only 10 cases`: designs 10 cases, shows them, then writes and runs them without stopping.
 
 1. It finds the feature's code with graphify (if a graph exists), or with Grep and parallel Explore agents, and maps the UI, API, data and permission layers.
 2. It reviews the current Playwright setup: config, auth, and the nearest existing suites and helpers.
@@ -68,17 +68,17 @@ Examples:
 ### Existing suite: run, fix and report
 
 ```
-/zone-playwright-test:e2e <feature | group | case-id> [--headed] [--no-fix] [--no-report]
+/zone-test:e2e <feature | group | case-id> [--headed] [--no-fix] [--no-report]
 ```
 
 | Example | Runs |
 | --- | --- |
-| `/zone-playwright-test:e2e condition-region-district` | The whole `condition-region-district` project |
-| `/zone-playwright-test:e2e lease region district --headed` | The matching project, in headed mode |
-| `/zone-playwright-test:e2e condition-region-district group A` | Only `test.describe('A. ...')` |
-| `/zone-playwright-test:e2e projects-region-district 03-edit-project-sites` | One spec file |
-| `/zone-playwright-test:e2e building-advanced-search F-9 --no-fix` | One case, diagnosed but not changed |
-| `/zone-playwright-test:e2e maphub --no-report` | Run, diagnose and fix, with no PDF |
+| `/zone-test:e2e condition-region-district` | The whole `condition-region-district` project |
+| `/zone-test:e2e lease region district --headed` | The matching project, in headed mode |
+| `/zone-test:e2e condition-region-district group A` | Only `test.describe('A. ...')` |
+| `/zone-test:e2e projects-region-district 03-edit-project-sites` | One spec file |
+| `/zone-test:e2e building-advanced-search F-9 --no-fix` | One case, diagnosed but not changed |
+| `/zone-test:e2e maphub --no-report` | Run, diagnose and fix, with no PDF |
 
 1. It finds the Playwright config, then resolves the target to a project and an exact `--grep` or file filter, and checks the selection with `--list`.
 2. It confirms the app is reachable and auth is ready. If not, it reports the blocker and stops.
@@ -95,13 +95,13 @@ Before each run, the command checks whether the selected tests can safely run in
 ## Outputs
 
 - `C:\zOne Test Reports\<Feature-Name>-Test-Report.pdf` (on macOS or Linux, `~/zOne Test Reports/`)
-- Working files (the Playwright results JSON for each run and the report data) stay in Claude's scratchpad or the system temp folder, under `zone-playwright-test/<project>/`. Only the PDF goes to `C:\zOne Test Reports\`.
+- Working files (the Playwright results JSON for each run and the report data) stay in Claude's scratchpad or the system temp folder, under `zone-test/<project>/`. Only the PDF goes to `C:\zOne Test Reports\`.
 - `<playwright folder>/playwright-report/index.html`
 - `<playwright folder>/test-results/`: screenshots, traces and error context. These can contain tokens, so do not share them.
 
 ## Report format
 
-Every PDF comes from [`scripts/render-report.mjs`](zone-playwright-test/scripts/render-report.mjs), which holds the one design. [`scripts/sample-report.json`](zone-playwright-test/scripts/sample-report.json) shows the data format. To change how every report looks, edit the renderer; never edit individual reports.
+Every PDF comes from [`scripts/render-report.mjs`](zone-test/scripts/render-report.mjs), which holds the one design. [`scripts/sample-report.json`](zone-test/scripts/sample-report.json) shows the data format. To change how every report looks, edit the renderer; never edit individual reports.
 
 ---
 
@@ -113,7 +113,7 @@ A Claude Code plugin that turns the day's Claude Code sessions into zOffice time
 
 ```
 /plugin marketplace add https://github.com/theab10hd/zone-playground.git
-/plugin install zone-work-log@zone-playground
+/plugin install zoffice@zone-playground
 ```
 
 The posting script drives your installed Google Chrome through `playwright-core`. The command installs that package into the plugin's `scripts` folder the first time; no browser is downloaded.
@@ -131,7 +131,7 @@ On macOS or Linux, add `export ZOFFICE_USERNAME=...` and `export ZOFFICE_PASSWOR
 
 Company-specific values live only on your machine, in `~/.zone-work-log/config.json`. The plugin itself holds no portal address, project list or client names.
 
-1. Run `/zone-work-log:log`. It asks for your zOffice URL (the address before `/Account/Login`) and writes the config.
+1. Run `/zoffice:log`. It asks for your zOffice URL (the address before `/Account/Login`) and writes the config.
 2. In your own terminal, save the dropdown options you can pick in zOffice:
    ```bash
    node "<plugin>/scripts/post-timesheet.mjs" --save-options
@@ -151,16 +151,16 @@ Company-specific values live only on your machine, in `~/.zone-work-log/config.j
 ## Usage
 
 ```
-/zone-work-log:log <project name> [YYYY-MM-DD]
+/zoffice:log <project name> [YYYY-MM-DD]
 ```
 
-For example `/zone-work-log:log acme` for a project named "zOne Acme". The project name can be partial, as long as it matches one project in your saved options.
+For example `/zoffice:log acme` for a project named "zOne Acme". The project name can be partial, as long as it matches one project in your saved options.
 
-Add `--break <from>-<to>` for each break, for example `/zone-work-log:log acme --break 1:00 PM-1:45 PM`. 12- and 24-hour times both work (`1pm-1:45pm`, `13:00-13:45`), and the flag can repeat. No entry is filed during a break: work that spans one is split into before and after. zOffice has no break activity and counts only filed entries as hours, so the break is never posted. It shows as its own row in the table for review.
+Add `--break <from>-<to>` for each break, for example `/zoffice:log acme --break 1:00 PM-1:45 PM`. 12- and 24-hour times both work (`1pm-1:45pm`, `13:00-13:45`), and the flag can repeat. No entry is filed during a break: work that spans one is split into before and after. zOffice has no break activity and counts only filed entries as hours, so the break is never posted. It shows as its own row in the table for review.
 
-Add `--start <time>` with the time you arrived and started working, for example `/zone-work-log:log acme --start 9:15 AM --break 12:30 PM-1:00 PM`. Sessions only show when Claude was in use, so without it the day starts at your first session. With it, the first entry starts at that time, and work before the first session counts toward that entry. A start later than your first session trims the entries before it. Times without AM/PM read 7–11 as AM and 12 and 1–6 as PM.
+Add `--start <time>` with the time you arrived and started working, for example `/zoffice:log acme --start 9:15 AM --break 12:30 PM-1:00 PM`. Sessions only show when Claude was in use, so without it the day starts at your first session. With it, the first entry starts at that time, and work before the first session counts toward that entry. A start later than your first session trims the entries before it. Times without AM/PM read 7–11 as AM and 12 and 1–6 as PM.
 
-Add `--wfh` to tick **Work From Home** on every entry, for example `/zone-work-log:log acme --start 9:15 AM --wfh`.
+Add `--wfh` to tick **Work From Home** on every entry, for example `/zoffice:log acme --start 9:15 AM --wfh`.
 
 1. It reads that day's sessions from `~/.claude/projects/` (today by default): each session's title, folder, active time blocks (a pause of 20+ minutes starts a new block) and your prompts with their times.
 2. It drafts entries from those blocks, with times rounded to 5 minutes and parallel sessions merged into one slot so nothing overlaps. Entries run back to back: a pause between sessions is added to the entry before it, so the only gaps are your `--break` times. It picks each entry's module and activity itself from what you worked on, using only the labels zOffice offers for that project.
@@ -181,7 +181,7 @@ This week: 9h 00m filed of 40h 00m minimum - 31h 00m more needed
 ## Clear today's time sheet
 
 ```
-/zone-work-log:clear
+/zoffice:clear
 ```
 
 It gives you the command to delete every entry on today's zOffice page, including ones you added by hand:

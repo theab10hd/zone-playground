@@ -33,7 +33,7 @@ Company-specific values live only in `~/.zone-work-log/config.json` on the user'
 
 ## 1. Parse the arguments
 
-- **`clear`** as the only argument: tell the user that clearing moved to `/zone-work-log:clear`, and stop.
+- **`clear`** as the only argument: tell the user that clearing moved to `/zoffice:clear`, and stop.
 - **Date**: the first `YYYY-MM-DD` in `$ARGUMENTS`, otherwise today.
 - **Breaks**: each `--break <from>-<to>` (it may repeat). Accept 12- or 24-hour times with or without a space or minutes: `1:00 PM-1:45 PM`, `1pm-1:45pm`, `13:00-13:45`. A break whose end is not after its start, or that you cannot read, is an error: say which one and stop. Remove each `--break` and its range before reading the project.
 - **Start**: `--start <time>` (once), the time the user arrived and started working, in the same formats (`9:15 AM`, `9:15am`, `09:15`). It is an error if it repeats or cannot be read. Remove it before reading the project.
@@ -52,7 +52,7 @@ Run:
 node "${CLAUDE_PLUGIN_ROOT}/scripts/collect-sessions.mjs" <date>
 ```
 
-If `${CLAUDE_PLUGIN_ROOT}` is not expanded, find the script with Glob `**/zone-work-log/scripts/collect-sessions.mjs` under `~/.claude/plugins/`.
+If `${CLAUDE_PLUGIN_ROOT}` is not expanded, find the script with Glob `**/zoffice/scripts/collect-sessions.mjs` under `~/.claude/plugins/`.
 
 The output lists each session's title, folder (`cwd`), active `segments` (local 24h time, split on 20+ minute pauses) and the user's prompts with times. If it is empty, say so and stop.
 
