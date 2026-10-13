@@ -1,6 +1,6 @@
 {
   "name": "zoffice",
-  "displayName": "zOne Work Log",
+  "displayName": "zOffice",
   "version": "1.7.0",
   "description": "Turn today's Claude Code sessions into zOffice time sheet entries, then post them to the Daily Activities page with Playwright",
   "author": { "name": "Abhijith G" },

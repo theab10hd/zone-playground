@@ -9,13 +9,13 @@
   "plugins": [
     {
       "name": "zone-test",
-      "displayName": "zOne Playwright Test",
+      "displayName": "zOne Test (Playwright)",
       "source": "./zone-test",
       "description": "End-to-end testing for the zOne app with Playwright: study a feature's code, design test cases, write the Playwright suite, run it, fix test defects, and produce a PDF report."
     },
     {
       "name": "zoffice",
-      "displayName": "zOne Work Log",
+      "displayName": "zOffice",
       "source": "./zoffice",
       "description": "Turn today's Claude Code sessions into zOffice time sheet entries, then post them to the Daily Activities page with Playwright."
     }

@@ -6,13 +6,13 @@ This is a growing set of Claude Code plugins that take the busywork out of the d
 
 | Plugin | What it does |
 | --- | --- |
-| **zOne Playwright Test** | Designs, writes, runs and fixes Playwright E2E suites, and produces a PDF report |
-| **zOne Work Log** | Drafts your zOffice time sheet from the day's Claude Code sessions, posts it, and shows the hours still needed |
+| **zOne Test (Playwright)** | Designs, writes, runs and fixes Playwright E2E suites, and produces a PDF report |
+| **zOffice** | Drafts your zOffice time sheet from the day's Claude Code sessions, posts it, and shows the hours still needed |
 | *More coming* | Doc preparation, debugging, refactoring |
 
 ---
 
-# zOne Playwright Test
+# zOne Test (Playwright)
 
 A Claude Code plugin with two commands for Playwright E2E testing:
 
@@ -105,7 +105,7 @@ Every PDF comes from [`scripts/render-report.mjs`](zone-test/scripts/render-repo
 
 ---
 
-# zOne Work Log
+# zOffice
 
 A Claude Code plugin that turns the day's Claude Code sessions into zOffice time sheet entries, posts them to the Daily Activities page, and tells you how many hours you still need.
 
