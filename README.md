@@ -156,6 +156,8 @@ Company-specific values live only on your machine, in `~/.zone-work-log/config.j
 
 For example `/zone-work-log:zone-work-log acme` for a project named "zOne Acme". The project name can be partial, as long as it matches one project in your saved options.
 
+Add `--break <from>-<to>` for each break, for example `/zone-work-log:zone-work-log acme --break 1:00 PM-1:45 PM`. 12- and 24-hour times both work (`1pm-1:45pm`, `13:00-13:45`), and the flag can repeat. No entry is filed during a break: work that spans one is split into before and after. zOffice has no break activity and counts only filed entries as hours, so the break is never posted. It shows as its own row in the table for review.
+
 1. It reads that day's sessions from `~/.claude/projects/` (today by default): each session's title, folder, active time blocks (a pause of 20+ minutes starts a new block) and your prompts with their times.
 2. It drafts entries from those blocks only: no invented work for gaps, times rounded to 5 minutes, and parallel sessions merged into one slot so nothing overlaps. It picks each entry's module and activity itself from what you worked on, using only the labels zOffice offers for that project.
 3. It lists the entries in chat as a numbered table with the total hours, plus every activity the project offers, so you can swap one by number ("3 → Review"). It waits for you to confirm or edit.
@@ -171,6 +173,20 @@ The script signs in, opens **Time Sheet**, fills and submits each entry and prin
 Today: 4h 15m filed of 6h 00m minimum - 1h 45m more needed
 This week: 9h 00m filed of 40h 00m minimum - 31h 00m more needed
 ```
+
+## Clear today's time sheet
+
+```
+/zone-work-log:zone-work-log clear
+```
+
+It gives you the command to delete every entry on today's zOffice page, including ones you added by hand:
+
+```bash
+node "<plugin>/scripts/post-timesheet.mjs" --clear --headed
+```
+
+The script signs in, lists today's entries, and deletes them one by one only after you type `DELETE`. Anything else cancels. Deleting cannot be undone. Today's entries file is kept, so you can post the same entries again with the normal command.
 
 ## Credentials and limits
 
