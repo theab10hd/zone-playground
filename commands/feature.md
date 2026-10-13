@@ -1,6 +1,6 @@
 ---
-description: Study a feature's code, design end-to-end test cases, write the Playwright suite, run it, fix test defects, and produce a PDF report
-argument-hint: <feature name and details> [--headed] [--no-report]
+description: "zOne app - study a feature's code, design end-to-end test cases, write the Playwright suite, run it, fix test defects, and produce a PDF report"
+argument-hint: "[auto] <feature name and details> [--headed] [--no-report]"
 ---
 
 # Feature → Playwright suite → PDF report
@@ -9,11 +9,16 @@ Request: `$ARGUMENTS`
 
 Take a feature description and carry it all the way through: find and study the code, design end-to-end test cases, list them, write the suite, run it, fix test defects, rerun, and report. Follow the project's `CLAUDE.md` if it has one. Never fabricate a result.
 
-Flags: `--headed` adds `--headed` to every Playwright command. `--no-report` skips the PDF. Everything else is the feature name and details.
+Flags:
+- `auto` as the **first word** (`/zone-playwright-test:feature auto <feature>`): run end to end without stopping. Only the first word counts, so "auto" or "auto-fill" later in the feature description never switches it on. Strip it from the feature text. Show the test cases in chat, then write and run them straight away.
+- No `auto`: stop after showing the test cases and wait for the user to confirm them (step 3). This is the default.
+- `--headed` adds `--headed` to every Playwright command. `--no-report` skips the PDF.
+
+Everything else is the feature name and details. Treat any limit the user gives, such as "only 10 cases" or "API only", as a hard constraint on step 3. Design exactly that many cases, or that scope, and no more.
 
 If the request names no recognisable feature, ask one question to pin it down, then continue.
 
-Locate the workspace root, Playwright dir and reports dir as described in step 0 of the `e2e` command in this plugin (`${CLAUDE_PLUGIN_ROOT}/commands/e2e.md`; if that path isn't expanded, use Glob `**/zone-playwright-test/**/commands/e2e.md` under `~/.claude/plugins/`). If the repo has no Playwright setup, stop and say so; do not install one unasked.
+Locate the workspace root, Playwright dir, reports dir and work dir as described in step 0 of the `e2e` command in this plugin (`${CLAUDE_PLUGIN_ROOT}/commands/e2e.md`; if that path isn't expanded, use Glob `**/zone-playwright-test/**/commands/e2e.md` under `~/.claude/plugins/`). If the repo has no Playwright setup, stop and say so; do not install one unasked.
 
 ## 1. Find the feature's code
 
@@ -47,7 +52,22 @@ From the feature map, design cases that cover the feature from the UI through th
 
 Group the cases into `describe` groups and give each case an id, following the existing convention (for example `A. API - ...` with ids `A1`, `A2`). Include only cases the code supports. Note anything you can't test, such as missing data, a role you can't access, or an external dependency, as a coverage gap rather than a case.
 
-**Show the list to the user** as a table (Id | Group | What It Checks | Layer | Type), followed by the coverage gaps. Then continue straight to step 4 without waiting. The user can interrupt to change the scope.
+### Show the test cases in chat (mandatory, in both modes)
+
+Post the full list as a message in the chat itself. Writing it to a file, the report or your own reasoning does not count. Use one table with a row per case:
+
+| Id | Group | What It Checks | Layer | Type |
+| --- | --- | --- | --- | --- |
+
+Under the table, give the case count (and the limit, if the user set one), then the coverage gaps. Do not summarise, merge or leave out rows.
+
+### Confirm before writing any code
+
+- **Without `auto`:** end your turn right after the table with this question: *"Reply **go** to write and run these, or tell me what to add, remove or change."* Do not start step 4, create test files, edit the config or run Playwright in this turn.
+  - If the user asks for changes (add, remove or reword cases, or change the scope), apply them, post the **whole revised table** again, and ask again. Repeat until they confirm.
+  - Only an explicit confirmation counts, such as "go", "yes", "confirmed" or "looks good, run it". Silence, a question or a partial answer is not a confirmation.
+  - Once they confirm, continue to step 4 with exactly the confirmed list.
+- **With `auto`:** after posting the table, continue straight to step 4 without asking.
 
 ## 4. Write the suite
 

@@ -49,14 +49,18 @@ claude --plugin-dir <path-to-clone>
 ### New feature: study the code, write the suite, run it and report
 
 ```
-/zone-playwright-test:feature <feature name and details> [--headed] [--no-report]
+/zone-playwright-test:feature [auto] <feature name and details> [--headed] [--no-report]
 ```
 
-Example: `/zone-playwright-test:feature lease region district filter - users pick region then district, grid and export follow the filter`
+Examples:
+- `/zone-playwright-test:feature lease region district filter - users pick region then district, grid and export follow the filter`: designs the cases and waits for your go-ahead.
+- `/zone-playwright-test:feature auto lease region district filter only 10 cases`: designs 10 cases, shows them, then writes and runs them without stopping.
 
 1. It finds the feature's code with graphify (if a graph exists), or with Grep and parallel Explore agents, and maps the UI, API, data and permission layers.
 2. It reviews the current Playwright setup: config, auth, and the nearest existing suites and helpers.
-3. It designs end-to-end cases (happy path, validation, boundaries, roles, persistence, cross-feature effects and cleanup), shows them as a table, and then continues.
+3. It designs end-to-end cases (happy path, validation, boundaries, roles, persistence, cross-feature effects and cleanup), keeping to any limit you give, such as "only 10 cases". It posts them in chat as a table.
+   - **Default:** it stops and waits. Reply **go** to continue, or ask it to add, remove or change cases. It posts the revised table and asks again. Nothing is written or run until you confirm.
+   - **`auto` as the first word:** it shows the table and carries on without asking.
 4. It writes the suite in the repo's conventions, registers the project in the Playwright config if projects are used, and typechecks.
 5. It runs, diagnoses, fixes and reruns the tests, and writes the PDF by following the `e2e` command below. The PDF also contains the feature map and the designed case list.
 
@@ -86,8 +90,7 @@ Example: `/zone-playwright-test:feature lease region district filter - users pic
 ## Outputs
 
 - `C:\zOne Test Reports\<Feature-Name>-Test-Report.pdf` (on macOS or Linux, `~/zOne Test Reports/`)
-- `C:\zOne Test Reports\<Feature-Name>-report-data.json`: the data the PDF was rendered from. To re-render it, run `node <plugin>/scripts/render-report.mjs <data.json> <out.pdf>` from the Playwright folder.
-- `C:\zOne Test Reports\<project>-e2e-run.json`: the raw results that every count in the report comes from
+- Working files (the Playwright results JSON for each run and the report data) stay in Claude's scratchpad or the system temp folder, under `zone-playwright-test/<project>/`. Only the PDF goes to `C:\zOne Test Reports\`.
 - `<playwright folder>/playwright-report/index.html`
 - `<playwright folder>/test-results/`: screenshots, traces and error context. These can contain tokens, so do not share them.
 
