@@ -25,7 +25,7 @@ They work in any project that has a `playwright.config.*`. Open Claude Code at t
 From any Claude Code session:
 
 ```
-/plugin marketplace add https://github.com/theab10hd/zone-playwright-test.git
+/plugin marketplace add https://github.com/theab10hd/zone-playground.git
 /plugin install zone-playwright-test@zone-playground
 ```
 
