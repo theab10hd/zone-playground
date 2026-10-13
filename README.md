@@ -1,4 +1,4 @@
-# Jithu's zOne Playground
+# zOne Playground
 
 AI tools for zOne workflows that make your code more powerful.
 
@@ -26,7 +26,7 @@ From any Claude Code session:
 
 ```
 /plugin marketplace add https://github.com/theab10hd/zone-playwright-test.git
-/plugin install zone-playwright-test@jithus-zone-playground
+/plugin install zone-playwright-test@zone-playground
 ```
 
 You can also add the marketplace in the desktop app under **Plugins**. Restart Claude Code, or run `/reload-plugins`, to pick up the commands.
