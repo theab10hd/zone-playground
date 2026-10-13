@@ -99,24 +99,26 @@ Rerun the fixed tests first, then the rest of their `describe` group and every o
 
 ## 8. PDF report (unless `--no-report`)
 
-Write a self-contained HTML file in your scratchpad: inline CSS, no external fonts or scripts, A4 width, `thead { display: table-header-group }`, and `tr { break-inside: avoid }`. Use green for Passed, amber for Skipped, red for Failed, and grey for Blocked or Not Run. Then render it from the Playwright dir:
+Never write the report HTML yourself. The plugin's renderer holds the one fixed design, so every report looks the same. Your job is to supply the data.
+
+1. Read `${CLAUDE_PLUGIN_ROOT}/scripts/sample-report.json`. If `${CLAUDE_PLUGIN_ROOT}` is not expanded, find it with Glob `**/zone-playwright-test/**/scripts/sample-report.json` under `~/.claude/plugins/`. It is the data format, by example. Use the same keys and no others.
+2. Write `<reports dir>/<Feature-Name>-report-data.json` in that format:
+   - `planned` is the `--list` count. `initial` holds the Initial counts from the first run's JSON.
+   - `groups` has one entry per `describe` group, and every executed test is one case row, with its **Final** result (`passed`, `skipped`, `failed`, `blocked` or `notRun`), its time and, for skipped or blocked cases, its `reason`.
+   - `narrative`: initial failures → fixes → reruns → final state.
+   - `findings`: confirmed items only, with `kind` set to `app`, `data`, `perf` or `test`. Fill in `evidence`, `expected`, `actual`, `impact` and `steps` wherever you have them. No speculation.
+   - `runData`: environment and base URL, user or role (no secrets), data discovered or created, cleanup, and settings touched or restored.
+   - `fixes`: each fix from step 6. `gaps`: skipped scenarios, unavailable data, untested paths and environment limits. `rerun`: the exact commands you ran, the working directory, auth prerequisites and artifact paths.
+   - Use `[]` for an empty list; never leave a key out. Inline `code` in backticks is the only formatting supported.
+3. Render it from the Playwright dir:
 
 ```bash
-node "${CLAUDE_PLUGIN_ROOT}/scripts/html-to-pdf.mjs" <report.html> "<reports dir>/<Feature-Name>-Test-Report.pdf"
+node "${CLAUDE_PLUGIN_ROOT}/scripts/render-report.mjs" "<reports dir>/<Feature-Name>-report-data.json" "<reports dir>/<Feature-Name>-Test-Report.pdf"
 ```
 
-If `${CLAUDE_PLUGIN_ROOT}` is not expanded, find the script with Glob `**/zone-playwright-test/**/scripts/html-to-pdf.mjs` under `~/.claude/plugins/`.
+The renderer works out the counts from the case rows, adds **PRELIMINARY** by itself when cases are fewer than `planned` or any case is `notRun`, and refuses invalid data with a list of what is wrong. If it refuses, fix the data and rerun it; never work around it by writing HTML.
 
-Sections:
-1. **Executive summary**: the title, feature, date, scope, suite path, project, workers, headed or headless mode, and the measured duration. Show cards for Passed, Skipped, Failed, Blocked and Verified, then a short narrative (initial failures → fixes → reruns → final state), and start the case table (Case | What It Checks | Result | Time).
-2. **Grouped case results**: one section per `describe` group. Every case keeps its own row, and each skip reason appears directly beneath its case.
-3. **Findings**: confirmed application defects, data inconsistencies and performance problems. Give each one evidence, observed and expected behaviour, impact, and reproduction steps. List test defects separately. Do not include speculation.
-4. **Run data**: environment and base URL, user or role (no secrets), the data discovered or created, cleanup, and settings touched or restored.
-5. **Test fixes**: each fix from step 6.
-6. **Coverage gaps**: skipped scenarios, unavailable data, untested paths and environment limits.
-7. **Rerun instructions**: the exact commands you actually ran, the working directory, the auth prerequisites, and the artifact paths (`playwright-report/index.html`, `test-results/`).
-
-Every number must come from the JSON results. If any planned case was not executed, title the report **PRELIMINARY**.
+Every result must come from the Playwright JSON results.
 
 ## 9. Final response
 

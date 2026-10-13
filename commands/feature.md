@@ -66,9 +66,9 @@ Follow steps 3 to 9 of `e2e.md` for the new project, using `--project=<project>`
 
 The rules there apply in full: classify every failure from evidence, fix only test defects, keep the Initial and Final results separate, and take every count from the JSON.
 
-In the PDF, also include:
-- **Feature map** (after the executive summary): the layers and files studied, and whether they came from graphify or search.
-- **Designed test cases**: the step 3 table, so the reader can compare designed and executed cases.
+In the report data, also fill in:
+- `featureMap` and `featureMapSource`: the layers and files studied, and whether they came from graphify or search.
+- `designedCases`: the step 3 table, so the reader can compare designed and executed cases.
 
 ## 6. Final response
 

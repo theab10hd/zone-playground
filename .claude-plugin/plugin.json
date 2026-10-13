@@ -1,7 +1,7 @@
 {
   "name": "zone-playwright-test",
   "displayName": "zOne Playwright Test",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Study a feature's code, design end-to-end test cases, write the Playwright suite, run it, fix test defects, and produce a PDF report",
   "author": { "name": "Abhijith G" },
   "repository": "https://github.com/theab10hd/zone-playground"

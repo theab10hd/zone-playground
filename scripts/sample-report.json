@@ -1,0 +1,86 @@
+{
+  "title": "Projects Region / District test run",
+  "feature": "Projects Region / District",
+  "date": "13 Oct 2026",
+  "summary": "End-to-end check of Region and District on Projects: the Sites step cascade and auto-fill, the Projects grid, search, sort and Excel export.",
+  "scope": {
+    "suite": "e2e/projects-region-district",
+    "project": "projects-region-district",
+    "workers": 1,
+    "mode": "headed",
+    "duration": "27m 10s"
+  },
+  "planned": 8,
+  "initial": { "passed": 5, "skipped": 1, "failed": 2 },
+  "narrative": "The first run had 2 failures, both from the tests themselves: a dropdown was closed with Escape, which also closed the wizard. After the fix the group was rerun and both passed. No failure pointed at the feature.",
+  "featureMapSource": "graphify query, confirmed in code",
+  "featureMap": [
+    { "layer": "UI", "items": ["`ProjectSitesStep.tsx`: Region › District › Site cascade", "`ProjectsGrid.tsx`: Region and District columns"] },
+    { "layer": "API", "items": ["`GET /api/v1/projects/all`", "`GET /api/v1/projects/{id}/locations`"] }
+  ],
+  "groups": [
+    {
+      "title": "A · API contract",
+      "cases": [
+        { "id": "A1", "checks": "Sites step form returns Region, District, Site in that order", "result": "passed", "time": "52s" },
+        { "id": "A2", "checks": "Site without Region / District gives blanks, no error", "result": "skipped", "reason": "No such site among the sites scanned" }
+      ]
+    },
+    {
+      "title": "B · Add Project › Sites step",
+      "cases": [
+        { "id": "B1", "checks": "Region narrows District, District narrows Site", "result": "passed", "time": "26s" },
+        { "id": "B2", "checks": "Picking a Site fills Region / District", "result": "passed", "time": "29s" },
+        { "id": "B3", "checks": "Changing Region resets District and Site", "result": "passed", "time": "27s" }
+      ]
+    },
+    {
+      "title": "C · Projects grid",
+      "cases": [
+        { "id": "C1", "checks": "Sort by Region, blanks last", "result": "passed", "time": "3m 28s" },
+        { "id": "C2", "checks": "Excel export carries Region / District", "result": "passed", "time": "1m 18s" },
+        { "id": "C3", "checks": "Advanced Search by District", "result": "passed", "time": "1m 35s" }
+      ]
+    }
+  ],
+  "designedCases": [
+    { "id": "A1", "group": "A · API contract", "checks": "Field order in the Sites step form", "layer": "API", "type": "Happy path" },
+    { "id": "A2", "group": "A · API contract", "checks": "Site with no Region / District", "layer": "API", "type": "Boundary" }
+  ],
+  "findings": [
+    {
+      "kind": "perf",
+      "tag": "Projects list",
+      "title": "Each Projects list request takes about 45 seconds",
+      "body": "Every call to `/api/v1/projects/all` took roughly 45 seconds, with or without a keyword.",
+      "evidence": "Network timings in the C1 and C2 traces",
+      "impact": "Most of the suite's run time is spent waiting on it"
+    },
+    {
+      "kind": "data",
+      "tag": "Sites",
+      "title": "3 sites cannot be reached through Region › District › Site",
+      "body": "These sites carry District 02B in their own record, but the District → Site relation does not link them.",
+      "items": ["Site_103932", "Site_110465", "Site_149497"]
+    },
+    {
+      "kind": "test",
+      "title": "Escape closed the wizard along with the dropdown",
+      "body": "B2 and B3 pressed Escape to close a dropdown, which also closed the Add Project wizard."
+    }
+  ],
+  "runData": [
+    { "title": "Environment", "rows": [["Base URL", "`https://localhost:3000`"], ["User", "Test admin (role: Admin)"]] },
+    { "title": "Test data", "rows": [["Created", "Draft projects named `AT_PRJ_RD_<run>_*`"], ["Cleanup", "Deleted after each file"]] }
+  ],
+  "fixes": [
+    { "file": "e2e/projects-region-district/02-sites-step.spec.ts:88", "cause": "Escape closed the wizard", "change": "Close the dropdown by clicking outside it", "why": "Keeps the wizard open for the next step" }
+  ],
+  "gaps": ["A2: no site without Region / District among the scanned sites."],
+  "rerun": {
+    "cwd": "frontend/ClientApp",
+    "auth": "Sign in first so `e2e/.auth/user.json` is fresh.",
+    "commands": ["npx playwright test --project=projects-region-district --headed"],
+    "artifacts": ["playwright-report/index.html", "test-results/"]
+  }
+}

@@ -81,11 +81,16 @@ Example: `/zone-playwright-test:feature lease region district filter - users pic
 4. It classifies each failure as an application defect, test defect, test data issue, environment issue or flaky test, using the error, `error-context.md`, screenshots and the code under test.
 5. It fixes test defects with minimal edits. It never weakens assertions, adds skips or edits application code to hide a defect.
 6. It reruns the fixed cases, their group and every case that shares a changed helper, and keeps the Initial and Final results separate.
-7. It writes the PDF: executive summary, grouped case results, findings, run data, test fixes, coverage gaps and rerun instructions. If any planned case did not run, the report is titled PRELIMINARY.
+7. It writes the report data as JSON, and the plugin's renderer turns it into the PDF: executive summary, grouped case results, findings, run data, test fixes, coverage gaps and rerun instructions. Every report uses the same fixed design. The renderer rejects incomplete data and adds PRELIMINARY to the title by itself if any planned case did not run.
 
 ## Outputs
 
 - `C:\zOne Test Reports\<Feature-Name>-Test-Report.pdf` (on macOS or Linux, `~/zOne Test Reports/`)
+- `C:\zOne Test Reports\<Feature-Name>-report-data.json`: the data the PDF was rendered from. To re-render it, run `node <plugin>/scripts/render-report.mjs <data.json> <out.pdf>` from the Playwright folder.
 - `C:\zOne Test Reports\<project>-e2e-run.json`: the raw results that every count in the report comes from
 - `<playwright folder>/playwright-report/index.html`
 - `<playwright folder>/test-results/`: screenshots, traces and error context. These can contain tokens, so do not share them.
+
+## Report format
+
+Every PDF comes from [`scripts/render-report.mjs`](scripts/render-report.mjs), which holds the one design. [`scripts/sample-report.json`](scripts/sample-report.json) shows the data format. To change how every report looks, edit the renderer; never edit individual reports.
