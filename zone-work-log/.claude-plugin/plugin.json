@@ -1,7 +1,7 @@
 {
   "name": "zone-work-log",
   "displayName": "zOne Work Log",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Turn today's Claude Code sessions into zOffice time sheet entries, then post them to the Daily Activities page with Playwright",
   "author": { "name": "Abhijith G" },
   "repository": "https://github.com/theab10hd/zone-playground"

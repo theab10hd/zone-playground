@@ -17,7 +17,6 @@ import path from 'node:path';
 import { chromium } from 'playwright-core';
 
 const CONFIG_PATH = path.join(os.homedir(), '.zone-work-log', 'config.json');
-const GENERATED_BY_TAG = 'zOne Playground';
 const MIN_DAILY_MINUTES = 6 * 60;
 const MIN_WEEKLY_MINUTES = 40 * 60;
 const USAGE = 'Usage: node post-timesheet.mjs [entries.json] [--headed]\n' +
@@ -157,7 +156,7 @@ async function postEntries(page) {
       await selectByLabel(page, 'ddlActivity', entry.activity);
       await setTime(page, 'start_timepicker', entry.start);
       await setTime(page, 'end_timepicker', entry.end);
-      await page.fill('#description', [entry.description, GENERATED_BY_TAG].filter(Boolean).join(' - '));
+      await page.fill('#description', entry.description || '');
       await page.setChecked('#isWorkfromhome', Boolean(entry.workFromHome));
       await page.click('#btn_addupdatesub');
 

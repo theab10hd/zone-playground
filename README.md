@@ -163,7 +163,7 @@ Add `--start <time>` with the time you arrived and started working, for example 
 Add `--wfh` to tick **Work From Home** on every entry, for example `/zone-work-log:zone-work-log acme --start 9:15 AM --wfh`.
 
 1. It reads that day's sessions from `~/.claude/projects/` (today by default): each session's title, folder, active time blocks (a pause of 20+ minutes starts a new block) and your prompts with their times.
-2. It drafts entries from those blocks only: no invented work for gaps, times rounded to 5 minutes, and parallel sessions merged into one slot so nothing overlaps. It picks each entry's module and activity itself from what you worked on, using only the labels zOffice offers for that project.
+2. It drafts entries from those blocks, with times rounded to 5 minutes and parallel sessions merged into one slot so nothing overlaps. Entries run back to back: a pause between sessions is added to the entry before it, so the only gaps are your `--break` times. It picks each entry's module and activity itself from what you worked on, using only the labels zOffice offers for that project.
 3. It lists the entries in chat as a numbered table with the total hours, plus every activity the project offers, so you can swap one by number ("3 → Review"). It waits for you to confirm or edit.
 4. Only after you confirm, it saves the entries to `~/.zone-work-log/entries/<date>.json` and gives you the command to post them. With no file argument the script posts today's file, so the command is the same every day:
    ```bash
@@ -171,7 +171,7 @@ Add `--wfh` to tick **Work From Home** on every entry, for example `/zone-work-l
    ```
    `--headed` shows the browser.
 
-The script signs in, opens **Time Sheet**, fills and submits each entry and prints `ADDED` or `FAILED` for it. A failure, such as a time the server rejects as overlapping, does not stop the rest. Every description ends with " - zOne Playground". At the end it prints your filed hours against the minimums, from zOffice's own Time Effort and Weekly Effort, so entries you added by hand count too:
+The script signs in, opens **Time Sheet**, fills and submits each entry and prints `ADDED` or `FAILED` for it. A failure, such as a time the server rejects as overlapping, does not stop the rest. At the end it prints your filed hours against the minimums, from zOffice's own Time Effort and Weekly Effort, so entries you added by hand count too:
 
 ```
 Today: 4h 15m filed of 6h 00m minimum - 1h 45m more needed
