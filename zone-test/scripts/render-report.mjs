@@ -120,7 +120,9 @@ const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>
   --display:"Segoe UI Semibold","Segoe UI",system-ui,sans-serif; --body:"Segoe UI",system-ui,sans-serif; --mono:Consolas,ui-monospace,monospace; }
 * { box-sizing:border-box; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 body { margin:0; background:var(--bg); color:var(--fg); font:10.5pt/1.55 var(--body); }
-.page { display:grid; gap:26px; }
+/* Top-level flow is block, not grid: Chromium sizes grid rows before paging, so a table that grows
+   across pages (repeated headers, rows pushed by break-inside) let the next section overlap it. */
+.page > * + * { margin-top:26px; }
 h1,h2 { font-family:var(--display); margin:0; letter-spacing:-0.01em; }
 h1 { font-size:22pt; line-height:1.15; } h2 { font-size:14pt; } h3 { font-size:10.5pt; margin:0; font-weight:600; }
 h2 { break-after:avoid; }
@@ -143,7 +145,7 @@ header > .eyebrow, header h1 { padding-right:150px; }
 .tile .n { font:700 20pt/1 var(--display); font-variant-numeric:tabular-nums; }
 .tile .l { color:var(--muted); font-size:8.5pt; }
 .tile.pass .n { color:var(--pass); } .tile.skip .n { color:var(--skip); } .tile.fail .n { color:var(--fail); } .tile.grey .n { color:var(--grey); }
-section { display:grid; gap:12px; }
+section > * + * { margin-top:12px; }
 .note { color:var(--muted); font-size:9.5pt; }
 .label { font-weight:600; font-size:9pt; }
 .table-wrap { border:1px solid var(--line); border-radius:7px; overflow:hidden; }
@@ -159,7 +161,7 @@ td.time { font-family:var(--mono); white-space:nowrap; color:var(--muted); text-
 .pill.pass { color:var(--pass); background:var(--pass-bg); } .pill.skip { color:var(--skip); background:var(--skip-bg); }
 .pill.fail { color:var(--fail); background:var(--fail-bg); } .pill.grey { color:var(--grey); background:var(--grey-bg); }
 .why { display:block; color:var(--muted); font-size:8.5pt; margin-top:2px; }
-.findings { display:grid; gap:10px; }
+.findings > * + * { margin-top:10px; }
 .finding { border:1px solid var(--line); border-left:4px solid var(--fail); border-radius:7px; padding:10px 14px; display:grid; gap:6px; break-inside:avoid; }
 .finding.data { border-left-color:var(--skip); } .finding.perf { border-left-color:var(--accent); } .finding.test { border-left-color:var(--grey); }
 .finding .sev { font:600 7.5pt var(--mono); text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); }
