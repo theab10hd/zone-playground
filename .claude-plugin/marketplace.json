@@ -18,6 +18,12 @@
       "displayName": "zOffice",
       "source": "./zoffice",
       "description": "Turn today's Claude Code sessions into zOffice time sheet entries, then post them to the Daily Activities page with Playwright."
+    },
+    {
+      "name": "zwork",
+      "displayName": "zWork",
+      "source": "./zwork",
+      "description": "Azure DevOps work, faster: list your bugs, tasks and PRs by state, review PRs and work items against the code, and plan and fix bugs and tasks by ID."
     }
   ]
 }

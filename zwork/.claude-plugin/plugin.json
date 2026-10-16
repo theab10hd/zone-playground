@@ -1,0 +1,9 @@
+{
+  "name": "zwork",
+  "displayName": "zWork",
+  "icon": "./assets/logo.png",
+  "version": "1.0.0",
+  "description": "Azure DevOps work, faster: see your bugs, tasks and PRs by state, review PRs and work items against the code, and plan and fix bugs and tasks by ID",
+  "author": { "name": "Abhijith G" },
+  "repository": "https://github.com/theab10hd/zone-playground"
+}

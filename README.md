@@ -8,6 +8,7 @@ This is a growing set of Claude Code plugins that take the busywork out of the d
 | --- | --- |
 | **zOne Test (Playwright)** | Designs, writes, runs and fixes Playwright E2E suites, and produces a PDF report |
 | **zOffice** | Drafts your zOffice time sheet from the day's Claude Code sessions, posts it, and shows the hours still needed |
+| **zWork** | Lists your Azure DevOps bugs, tasks and PRs by state, reviews PRs and work items against the code, and plans and fixes bugs by ID |
 | *More coming* | Doc preparation, debugging, refactoring |
 
 ---
@@ -197,3 +198,81 @@ The script signs in and deletes today's entries one by one straight away, with n
 - You run the posting script yourself, and it reads your sign-in only from `ZOFFICE_USERNAME` and `ZOFFICE_PASSWORD`. Claude never asks for, stores or types your password. `setx` keeps the values in your Windows user environment in plain text, so only use it on your own account. Don't pass credentials to the slash command: anything typed into chat stays in the transcript.
 - Entries are posted to today's page only. For another date, the command writes the file, and you add those entries by hand.
 - The minimums (6 hours a day, 40 hours a week) are constants at the top of `post-timesheet.mjs`.
+
+---
+
+# zWork
+
+A Claude Code plugin for day-to-day Azure DevOps work on `https://devops.zlinkcorp.com/tfs/zOne`: see what is on your plate, understand a bug from the code, review a PR, and plan and fix bugs and tasks by ID.
+
+## Install
+
+```
+/plugin marketplace add https://github.com/theab10hd/zone-playground.git
+/plugin install zwork@zone-playground
+```
+
+## Setup (once)
+
+Run `/zwork:init`. It checks the MCP server, your token, the network path to the server, your identity and the token's permissions, prints the exact steps to fix anything that fails, and shows how to use every command. The steps are:
+
+1. Create a Personal Access Token at `https://devops.zlinkcorp.com/tfs/zOne/_usersSettings/tokens` with these scopes:
+
+   | Scope | Access | Why |
+   | --- | --- | --- |
+   | Work Items | Read & write | list, review and plan bugs and tasks; comment and change state when you approve |
+   | Code | Read & write | list and review PRs, post review comments, create PRs |
+   | Build | Read | show PR build and policy status |
+   | Project and Team | Read | find the project and its repositories |
+
+2. Save it in your environment (PowerShell, then reopen the terminal and Claude Code):
+   ```powershell
+   setx AZURE_DEVOPS_PAT "<your token>"
+   ```
+3. Add the [`@tiberriver256/mcp-server-azure-devops`](https://github.com/Tiberriver256/mcp-server-azure-devops) server (Node.js 18+; on macOS/Linux end with `-- npx -y @tiberriver256/mcp-server-azure-devops`):
+   ```bash
+   claude mcp add azure-devops --scope user -e AZURE_DEVOPS_ORG_URL=https://devops.zlinkcorp.com/tfs/zOne -e AZURE_DEVOPS_AUTH_METHOD=pat -e "AZURE_DEVOPS_DEFAULT_PROJECT=zOne v1.1" -- cmd /c npx -y @tiberriver256/mcp-server-azure-devops
+   ```
+4. Restart Claude Code and run `/zwork:init` again.
+
+## Commands
+
+Every command takes the same arguments:
+
+| Argument | Meaning |
+| --- | --- |
+| `--bug`, `--task`, `--pr` | Type. Numbers after it are ids of that type: `--bug 18923 12333`. No type flag means all types. |
+| `--new`, `--active`, `--resolved` | State filter for `review` and `plan`. Combine freely. |
+| `--days N` | How far back "resolved" looks for closed items and completed PRs (default 7). |
+
+| Command | What it does |
+| --- | --- |
+| `/zwork:init` | Checks the connection and token permissions, and shows the setup steps |
+| `/zwork:help` | Every command with examples |
+| `/zwork:status` | Dashboard: counts by state, the 5 things to do next, and what changed since yesterday |
+| `/zwork:new [--bug] [--task] [--pr]` | Your work not started yet, and PRs waiting for your review |
+| `/zwork:active [--bug] [--task] [--pr]` | Your work in progress, and your open PRs |
+| `/zwork:resolved [--bug] [--task] [--pr] [--days N]` | Your finished work, plus items closed and PRs completed in the last N days |
+| `/zwork:review --bug 18923 12333` | Explains each bug from the code: root cause with file links, impact, confidence and open questions |
+| `/zwork:review --bug --new` | The same for every new bug assigned to you |
+| `/zwork:review --pr 8590` | Reviews a PR: scope, affected areas, bugs it can produce, issues and a verdict; posts comments only if you say yes |
+| `/zwork:review --pr --new` | Reviews every PR waiting for your vote |
+| `/zwork:plan --bug 18923 12333` | Plans the fix for only those bugs |
+| `/zwork:plan --bug --new` | Plans every new bug assigned to you |
+| `/zwork:pr [--target <branch>]` | Opens a PR for the current branch, linked to the work items in its name and commits |
+
+### How `plan` works
+
+1. It investigates the items one by one and writes a plan for each to `.zwork/plans/<date>-<selection>.md` in your workspace (kept out of git through `.git/info/exclude`), posting progress as it goes: problem, root cause with file links, fix, risk, how to verify, size and branch name.
+2. It shows the whole plan and waits. Reply **go**, **go 18923**, **skip 12333**, or ask for changes. Add `auto` to the command to skip this wait.
+3. It fixes each item on its own branch (`bugfix/<id>-<slug>` or `task/<id>-<slug>`), runs the repo's checks, and asks to commit with `Fix #<id>: <title>` before moving to the next item.
+4. At the end it offers to open PRs and to resolve the items in DevOps with a comment, each only after you say yes.
+
+Work item states differ per type: bugs use New / Active / Resolved / Closed, while tasks use custom states such as *Task Ready for Testing*. zWork sorts each item into new, active or resolved by its actual state and tells you when it had to judge an unfamiliar one.
+
+Open Claude Code in the folder that holds the repositories you work on, so `review` and `plan` can read the code.
+
+## Safety
+
+- `init`, `help`, `status`, `new`, `active`, `resolved` and `review` are read-only (`review --pr` posts comments only after your yes). Commits, pushes, PRs, work item comments and state changes each happen only after you see exactly what will be written and say yes.
+- zWork never asks for, stores or prints your PAT.
