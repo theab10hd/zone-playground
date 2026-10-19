@@ -9,20 +9,25 @@ const windows = atom(
 )
 
 const CLAUDE_ORANGE = '#D97757'
-const BAR_WIDTH_PX = 180
-const BAR_HEIGHT_PX = 8
-// Terminal has no Svg, so it falls back to a continuous line of this many cells.
-const TERMINAL_BAR_CELLS = 20
+const BAR_HEIGHT_PX = 6
+// ponytail: Svg is sized in CSS pixels while the band lays out in cells; 7px per cell keeps the bar inside its cells at the usual font size.
+const PX_PER_CELL = 7
+const LABEL_COLUMNS = 8
+const STATS_COLUMNS = 14
+const GAP_COLUMNS = 3
+const MIN_BAR_COLUMNS = 8
+const MAX_BAR_COLUMNS = 28
+const MIN_BLOCK_COLUMNS = LABEL_COLUMNS + MIN_BAR_COLUMNS + STATS_COLUMNS
 
 // A rounded track with a rounded fill; the track is translucent so it reads on light and dark themes.
-const buildBarSvg = (percentUsed: number) => {
+const buildBarSvg = (percentUsed: number, barWidthPx: number) => {
   const radius = BAR_HEIGHT_PX / 2
   const clampedPercent = Math.max(0, Math.min(100, percentUsed))
   // Keep any non-zero fill at least as wide as its rounded caps so it never draws as a sliver.
-  const fillWidth = clampedPercent === 0 ? 0 : Math.max(BAR_HEIGHT_PX, (clampedPercent / 100) * BAR_WIDTH_PX)
+  const fillWidth = clampedPercent === 0 ? 0 : Math.max(BAR_HEIGHT_PX, (clampedPercent / 100) * barWidthPx)
   return (
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${BAR_WIDTH_PX}" height="${BAR_HEIGHT_PX}" viewBox="0 0 ${BAR_WIDTH_PX} ${BAR_HEIGHT_PX}">` +
-    `<rect width="${BAR_WIDTH_PX}" height="${BAR_HEIGHT_PX}" rx="${radius}" fill="rgba(128,128,128,0.28)"/>` +
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${barWidthPx}" height="${BAR_HEIGHT_PX}" viewBox="0 0 ${barWidthPx} ${BAR_HEIGHT_PX}">` +
+    `<rect width="${barWidthPx}" height="${BAR_HEIGHT_PX}" rx="${radius}" fill="rgba(128,128,128,0.28)"/>` +
     (fillWidth > 0 ? `<rect width="${fillWidth}" height="${BAR_HEIGHT_PX}" rx="${radius}" fill="${CLAUDE_ORANGE}"/>` : '') +
     `</svg>`
   )
@@ -70,37 +75,50 @@ export const register: Register = on => {
     const { Box, Text } = elements
     const now = await $.clock.now()
 
+    // Side by side when both blocks fit at their minimum width, otherwise one per row.
+    const shownCount = (fiveHour ? 1 : 0) + (weekly ? 1 : 0)
+    const isSideBySide = shownCount === 2 && e.props.bodyColumns >= MIN_BLOCK_COLUMNS * 2 + GAP_COLUMNS
+    const blockColumns = isSideBySide ? Math.floor((e.props.bodyColumns - GAP_COLUMNS) / 2) : e.props.bodyColumns
+    const barColumns = Math.max(
+      MIN_BAR_COLUMNS,
+      Math.min(MAX_BAR_COLUMNS, blockColumns - LABEL_COLUMNS - STATS_COLUMNS),
+    )
+
     const usageBar = (label: string, window: UsageWindow) => {
       const reset = formatReset(window.resetsAt, now)
-      const filledCells = Math.min(TERMINAL_BAR_CELLS, Math.round((window.percentUsed / 100) * TERMINAL_BAR_CELLS))
+      const filledCells = Math.min(barColumns, Math.round((window.percentUsed / 100) * barColumns))
       return (
-        <Box key={label} flexDirection="row" alignItems="center" width="50%">
-          <Box marginRight={2}>
-            <Text dimColor>{label}</Text>
+        <Box key={label} flexDirection="row" alignItems="center" width={blockColumns}>
+          <Box width={LABEL_COLUMNS} flexShrink={0}>
+            <Text dimColor wrap="truncate">{label}</Text>
           </Box>
-          {'Svg' in elements ? (
-            <elements.Svg
-              source={buildBarSvg(window.percentUsed)}
-              alt={`${label} ${window.percentUsed}% used`}
-              width={BAR_WIDTH_PX}
-              height={BAR_HEIGHT_PX}
-            />
-          ) : (
-            <Box flexDirection="row">
-              <Text color="claude">{'━'.repeat(filledCells)}</Text>
-              <Text dimColor>{'━'.repeat(TERMINAL_BAR_CELLS - filledCells)}</Text>
-            </Box>
-          )}
-          <Box marginLeft={2}>
-            <Text bold>{window.percentUsed}%</Text>
-            <Text dimColor>{reset ? ` · resets in ${reset}` : ''}</Text>
+          <Box width={barColumns} flexShrink={0}>
+            {'Svg' in elements ? (
+              <elements.Svg
+                source={buildBarSvg(window.percentUsed, barColumns * PX_PER_CELL)}
+                alt={`${label} ${window.percentUsed}% used`}
+                width={barColumns * PX_PER_CELL}
+                height={BAR_HEIGHT_PX}
+              />
+            ) : (
+              <Text>
+                <Text color="claude">{'━'.repeat(filledCells)}</Text>
+                <Text dimColor>{'━'.repeat(barColumns - filledCells)}</Text>
+              </Text>
+            )}
+          </Box>
+          <Box width={STATS_COLUMNS} flexShrink={0} marginLeft={1}>
+            <Text wrap="truncate">
+              <Text bold>{window.percentUsed}%</Text>
+              <Text dimColor>{reset ? ` · ${reset}` : ''}</Text>
+            </Text>
           </Box>
         </Box>
       )
     }
 
     return (
-      <Box flexDirection="row" width="100%">
+      <Box flexDirection={isSideBySide ? 'row' : 'column'} columnGap={GAP_COLUMNS}>
         {fiveHour && usageBar('5h', fiveHour)}
         {weekly && usageBar('Weekly', weekly)}
       </Box>
