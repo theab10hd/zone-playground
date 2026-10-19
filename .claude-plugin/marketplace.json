@@ -24,6 +24,12 @@
       "displayName": "zWork",
       "source": "./zwork",
       "description": "Azure DevOps work, faster: list your bugs, tasks and PRs by state, review PRs and work items against the code, and plan and fix bugs and tasks by ID."
+    },
+    {
+      "name": "zmod",
+      "displayName": "zMod",
+      "source": "./zmod",
+      "description": "Shows your 5-hour and weekly Claude usage limits as rounded Claude-orange progress bars above the prompt, with the time until each resets."
     }
   ]
 }
