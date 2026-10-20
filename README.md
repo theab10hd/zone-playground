@@ -44,7 +44,7 @@ claude --plugin-dir <path-to-clone>/zone-test
 
 - The app under test is reachable at the config's `baseURL`, or the config's `webServer` starts it.
 - `npm install` has been run in the Playwright folder, so `@playwright/test` and its Chromium are present. The PDF is rendered with that Chromium, and the plugin adds no dependency.
-- Auth: whatever your setup project needs, such as a fresh storage-state file or credentials in environment variables that you set in your own shell. The commands never ask for or type a password.
+- Auth: the commands find the login your setup project already uses (credentials hardcoded in the setup or fixtures, `.env` files, environment variables, or a saved storage-state file) and run the auth setup themselves before the tests, without asking. They ask only when no login is available anywhere, and never print a password or token.
 - Optional: [graphify](https://github.com/deadmade/dead-claude-skills) with a built `graphify-out/graph.json` at the workspace root. It makes the feature-discovery step faster. Without it, the plugin falls back to code search.
 
 ## Usage
@@ -52,18 +52,18 @@ claude --plugin-dir <path-to-clone>/zone-test
 ### New feature: study the code, write the suite, run it and report
 
 ```
-/zone-test:feature [auto] <feature name and details> [--headed] [--no-report]
+/zone-test:feature [manual] <feature name and details> [--headed] [--no-report]
 ```
 
 Examples:
-- `/zone-test:feature lease region district filter - users pick region then district, grid and export follow the filter`: designs the cases and waits for your go-ahead.
-- `/zone-test:feature auto lease region district filter only 10 cases`: designs 10 cases, shows them, then writes and runs them without stopping.
+- `/zone-test:feature lease region district filter - users pick region then district, grid and export follow the filter`: designs the cases, shows them, then runs the auth setup and writes and runs them without stopping.
+- `/zone-test:feature manual lease region district filter only 10 cases`: designs 10 cases and waits for your go-ahead.
 
 1. It finds the feature's code with graphify (if a graph exists), or with Grep and parallel Explore agents, and maps the UI, API, data and permission layers.
 2. It reviews the current Playwright setup: config, auth, and the nearest existing suites and helpers.
-3. It designs end-to-end cases (happy path, validation, boundaries, roles, persistence, cross-feature effects and cleanup), keeping to any limit you give, such as "only 10 cases". It posts them in chat as a table.
-   - **Default:** it stops and waits. Reply **go** to continue, or ask it to add, remove or change cases. It posts the revised table and asks again. Nothing is written or run until you confirm.
-   - **`auto` as the first word:** it shows the table and carries on without asking.
+3. It designs thorough end-to-end cases: UI checks, API checks, data validation, user roles (where the feature enforces them), edge cases, full end-to-end flows, other affected areas, and cleanup. Expect many cases; it keeps to any limit you give, such as "only 10 cases". It posts them in chat as a table.
+   - **Default (auto):** it shows the table and carries on without asking.
+   - **`manual` as the first word:** it stops and waits. Reply **go** to continue, or ask it to add, remove or change cases. It posts the revised table and asks again. Nothing is written or run until you confirm.
 4. It writes the suite in the repo's conventions, registers the project in the Playwright config if projects are used, and typechecks.
 5. It runs, diagnoses, fixes and reruns the tests, and writes the PDF by following the `e2e` command below. The PDF also contains the feature map and the designed case list.
 
@@ -83,7 +83,7 @@ Examples:
 | `/zone-test:e2e maphub --no-report` | Run, diagnose and fix, with no PDF |
 
 1. It finds the Playwright config, then resolves the target to a project and an exact `--grep` or file filter, and checks the selection with `--list`.
-2. It confirms the app is reachable and auth is ready. If not, it reports the blocker and stops.
+2. It confirms the app is reachable, finds the hardcoded or saved login, and runs the auth setup itself. It stops only if the app is down or no login is available.
 3. It picks the fastest safe worker count (see below), runs the tests with list, HTML and JSON reporters, and posts a live line as each test passes, is skipped or fails, with a running tally. The final counts come only from the JSON.
 4. It classifies each failure as an application defect, test defect, test data issue, environment issue or flaky test, using the error, `error-context.md`, screenshots and the code under test.
 5. It fixes test defects with minimal edits. It never weakens assertions, adds skips or edits application code to hide a defect.

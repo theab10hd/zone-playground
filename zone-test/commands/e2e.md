@@ -53,7 +53,12 @@ If the config has no projects, drop `--project`. Before running, confirm with `-
 ## 3. Environment and auth prerequisites
 
 - The app must be reachable at the config's `baseURL`, unless the config's `webServer` starts it. If it is not reachable, stop and report an **environment** blocker. Do not start or alter servers on your own.
-- Read the auth setup to learn what it needs: a saved storage-state file, environment variables or a seeded user. **Never type, print or ask for a password.** If a new sign-in is needed, name the variables the setup reads and ask the user to set them in their own shell and rerun.
+- **Auth.** Always check the auth setup before running, and run it yourself; never ask the user whether to run it.
+  1. Read the auth or setup project and find where its login comes from: credentials hardcoded in the setup spec, a config or fixture file, `.env` / `.env.*` files the config loads, environment variables already set in the shell, or a saved storage-state file (for example `playwright/.auth/*.json`). Note each user or role it signs in as.
+  2. If the target project lists the setup in `dependencies`, Playwright runs it with the tests, so just run the target. If it doesn't, but the target uses a storage state the setup writes, run the setup project first (`npx playwright test --project=<setup>`), then the target, in the same turn.
+  3. If only a saved storage state exists, reuse it. If the run then fails because the session expired, rerun the setup once if it can sign in, then rerun the target.
+  4. Only when no login is available anywhere (no hardcoded or saved credentials, no env values, no usable storage state) stop, name the variables or file the setup needs, and ask the user to provide them in their own shell.
+  - Use only the login the project already holds; the setup project does the signing in. **Never print a password, token or cookie** in chat, the report or a file, and never type one into a page yourself.
 - Use the project's own API and session helpers (token refresh, headers, shared context) when they exist. Do not open extra browser contexts on one storage state, and do not add retries to projects with `retries: 0`, if the suite's comments or helpers show that this breaks the session.
 - Assume a shared database changes during a run. Do not assert exact counts across calls.
 - Never run destructive tests against data you were not told is disposable. Never write to the database directly.
