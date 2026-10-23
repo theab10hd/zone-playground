@@ -16,8 +16,9 @@ This is a growing set of Claude Code plugins that take the busywork out of the d
 
 # zOne Test (Playwright)
 
-A Claude Code plugin with two commands for Playwright E2E testing:
+A Claude Code plugin with three commands for QA and Playwright E2E testing:
 
+- `/zone-test:qa` takes a feature or files, has a team of tester agents read the code edge to edge, reports functional, data, security and UI bugs by severity, then plans and fixes them after you confirm. It runs nothing.
 - `/zone-test:feature` takes a feature description, studies the code, designs end-to-end cases, writes the suite, runs it, fixes test defects and produces a PDF report.
 - `/zone-test:e2e` runs an existing suite, group or case, diagnoses every failure from real Playwright evidence, fixes genuine test defects, reruns, and produces a PDF report.
 
@@ -48,6 +49,22 @@ claude --plugin-dir <path-to-clone>/zone-test
 - Optional: [graphify](https://github.com/deadmade/dead-claude-skills) with a built `graphify-out/graph.json` at the workspace root. It makes the feature-discovery step faster. Without it, the plugin falls back to code search.
 
 ## Usage
+
+### QA review: find the bugs before writing tests
+
+```
+/zone-test:qa <feature name or file paths> [docs: <PRD / TRD / spec paths>]
+```
+
+- `/zone-test:qa lease region district filter docs: specs/region-filter-prd.md`
+
+1. It reads `CLAUDE.md`, the engineering guide, recent git changes to the feature, and any PRD, TRD or spec you give it.
+2. It maps the feature edge to edge, plus every caller of the code it changes, into a scope map of files.
+3. It asks you about any behaviour the code and docs leave unclear.
+4. A team of tester agents reviews every file in scope in parallel, each through one lens: functional logic, data and API, security and permissions, UI and style (overlap, clipping, broken text, states), edge cases and concurrency, and regression and Playwright readiness. Nothing is run.
+5. As senior QA it confirms each finding in the code, drops false positives, merges duplicates to their root cause, assigns severity, and sends testers back to any file left unread.
+6. It posts the bugs grouped by severity (Bug, Severity, Areas Involved, How to Reproduce / Verify) and saves them to `C:\zOne Test Reports\<Feature-Name>-QA-Report.md`.
+7. It asks whether to fix them, posts a plan with each bug, its fix and the files changed, and applies it only after you reply go. It then runs the project's typecheck, lint, build or unit tests, re-reviews the changed files, and marks each bug fixed or not.
 
 ### New feature: study the code, write the suite, run it and report
 

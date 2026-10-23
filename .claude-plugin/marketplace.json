@@ -11,7 +11,7 @@
       "name": "zone-test",
       "displayName": "zOne Test (Playwright)",
       "source": "./zone-test",
-      "description": "End-to-end testing for the zOne app with Playwright: study a feature's code, design test cases, write the Playwright suite, run it, fix test defects, and produce a PDF report."
+      "description": "QA review and end-to-end testing for the zOne app: find bugs in a feature's code by severity and fix them, then study a feature's code, design test cases, write the Playwright suite, run it, fix test defects, and produce a PDF report."
     },
     {
       "name": "zoffice",
