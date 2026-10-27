@@ -6,7 +6,7 @@ This is a growing set of Claude Code plugins that take the busywork out of the d
 
 | Plugin | What it does |
 | --- | --- |
-| **zOne Test (Playwright)** | Designs, writes, runs and fixes Playwright E2E suites, and produces a PDF report |
+| **zOne Test** | Designs, writes, runs and fixes Playwright E2E suites, and produces a PDF report |
 | **zOffice** | Drafts your zOffice time sheet from the day's Claude Code sessions, posts it, and shows the hours still needed |
 | **zWork** | Lists your Azure DevOps bugs, tasks and PRs by state, reviews PRs and work items against the code, and plans and fixes bugs by ID |
 | **zDev** | Rebuilds the backend and copies the module DLLs into the local frontend in one command |
@@ -14,7 +14,7 @@ This is a growing set of Claude Code plugins that take the busywork out of the d
 
 ---
 
-# zOne Test (Playwright)
+# zOne Test
 
 A Claude Code plugin with three commands for QA and Playwright E2E testing:
 
