@@ -1,0 +1,9 @@
+{
+  "name": "zdev",
+  "displayName": "zDev",
+  "icon": "./assets/logo.png",
+  "version": "1.0.0",
+  "description": "Local zOne dev, faster: stop the running frontend, build the backend, run CopyDll.bat and copy the module DLLs into the frontend in one command",
+  "author": { "name": "Abhijith G" },
+  "repository": "https://github.com/theab10hd/zone-playground"
+}

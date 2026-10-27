@@ -9,7 +9,7 @@ This is a growing set of Claude Code plugins that take the busywork out of the d
 | **zOne Test (Playwright)** | Designs, writes, runs and fixes Playwright E2E suites, and produces a PDF report |
 | **zOffice** | Drafts your zOffice time sheet from the day's Claude Code sessions, posts it, and shows the hours still needed |
 | **zWork** | Lists your Azure DevOps bugs, tasks and PRs by state, reviews PRs and work items against the code, and plans and fixes bugs by ID |
-| **zMod** | Shows your 5-hour and weekly usage limits as progress bars above the prompt |
+| **zDev** | Rebuilds the backend and copies the module DLLs into the local frontend in one command |
 | *More coming* | Doc preparation, debugging, refactoring |
 
 ---
@@ -297,27 +297,22 @@ Open Claude Code in the folder that holds the repositories you work on, so `revi
 
 ---
 
-# zMod
+# zDev
 
-A Claude Code plugin that shows how much of your Claude usage limits you have used, in a band above the prompt:
+A Claude Code plugin for running the zOne app locally.
 
-- **5h**: the rolling 5-hour limit
-- **Weekly**: the 7-day limit
+- `/zdev:copydll [zOne folder]` stops every running frontend (`dotnet run`, `dotnet watch` or the built exe, wherever it was started), builds the backend solution, runs `backend\zLink.References\CopyDll.bat`, copies every `.dll` from `C:\zOneDlls` into `frontend\bin\Debug\net7.0`, then tells you it is done and shows a Windows notification "Copy Dll Done".
 
-Each limit is a rounded progress bar filled in Claude orange, with the percentage used and the time until it resets. The bars update after every turn and whenever a limit moves by a whole percent.
+With no folder it finds the checkout that holds `zLink.References\CopyDll.bat`: up from the current folder, then `D:\zOne`, then every drive.
 
 ## Install
 
 ```
 /plugin marketplace add https://github.com/theab10hd/zone-playground.git
-/plugin install zmod@zone-playground
+/plugin install zdev@zone-playground
 ```
-
-Choose the user scope so it shows in every session. Restart Claude Code, or run `/reload-plugins`, to see the band.
 
 ## Notes
 
-- It needs a Claude subscription: the limits come from the usage the API reports with each response. With no reading yet (a new session before its first reply, or an API-key login), the band stays hidden.
-- The figures are percentages of each limit. Claude Code is not told the raw token counts behind them.
-- The desktop app draws rounded bars. The terminal has no graphics, so it draws each bar as a continuous orange line.
-- It uses Claude Code's plugin hooks API and was built on Claude Code 2.1.299; older releases may not load it.
+- Windows only. It needs the .NET SDK on the path.
+- Start the frontend again after it finishes.
