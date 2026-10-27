@@ -4,32 +4,32 @@
     "name": "theab10hd"
   },
   "metadata": {
-    "description": "zOne Playground: AI tools for zOne workflows that make your code more powerful. A growing set of Claude Code plugins that take the busywork out of the day: testing, doc preparation, debugging, code refactoring and more. Describe what you need, and let the tools read the code, do the work and show you the evidence."
+    "description": "zOne Playground: Claude Code plugins for zOne work. Plan and build features against the real code, review and test them with Playwright, handle your Azure DevOps bugs, tasks and PRs, and fill in your zOffice time sheet. Describe what you need, and the tools read the code, do the work and show you the evidence."
   },
   "plugins": [
     {
       "name": "zone-test",
       "displayName": "zOne Test",
       "source": "./zone-test",
-      "description": "QA review and end-to-end testing for the zOne app: find bugs in a feature's code by severity and fix them, then study a feature's code, design test cases, write the Playwright suite, run it, fix test defects, and produce a PDF report."
+      "description": "zOne QA and Playwright E2E testing: review a feature's code with a team of tester agents and fix the bugs found by severity (/zone-test:qa); design, write and run a Playwright suite for a feature (/zone-test:feature); run an existing suite, fix test defects and rerun (/zone-test:e2e). Every run ends in a PDF report."
     },
     {
       "name": "zoffice",
       "displayName": "zOffice",
       "source": "./zoffice",
-      "description": "Turn today's Claude Code sessions into zOffice time sheet entries, then post them to the Daily Activities page with Playwright."
+      "description": "zOffice time sheets: draft the day's entries from your Claude Code sessions with start, break and work-from-home options, let you edit them, and give you the command that posts them to Daily Activities with Playwright (/zoffice:log); clear today's entries (/zoffice:clear)."
     },
     {
       "name": "zwork",
       "displayName": "zWork",
       "source": "./zwork",
-      "description": "Azure DevOps work, faster: list your bugs, tasks and PRs by state, review PRs and work items against the code, and plan and fix bugs and tasks by ID."
+      "description": "Azure DevOps work for zOne: a status dashboard and your bugs, tasks and PRs by state (/zwork:status, new, active, resolved); explain work items or review PRs against the code (/zwork:review); plan and fix bugs and tasks on their own branches (/zwork:plan); open linked PRs (/zwork:pr); check the connection (/zwork:init)."
     },
     {
       "name": "zdev",
       "displayName": "zDev",
       "source": "./zdev",
-      "description": "Local zOne dev, faster: plan a feature with you against the real code and build it after you approve, and rebuild the backend and copy the module DLLs into the frontend in one command."
+      "description": "zOne feature development: plan a feature with you against the real code on Opus (read-only investigation, impact analysis, open questions, a reviewed plan) and build it on Sonnet or Opus after you approve (/zdev:plan); stop the frontend, build the backend and copy the module DLLs into it in one command (/zdev:copydll)."
     }
   ]
 }

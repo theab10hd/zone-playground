@@ -3,7 +3,7 @@
   "displayName": "zOffice",
   "icon": "./assets/logo.png",
   "version": "1.7.1",
-  "description": "Turn today's Claude Code sessions into zOffice time sheet entries, then post them to the Daily Activities page with Playwright",
+  "description": "zOffice time sheets: draft the day's entries from your Claude Code sessions with start, break and work-from-home options, let you edit them, and give you the command that posts them to Daily Activities with Playwright (/zoffice:log); clear today's entries (/zoffice:clear)",
   "author": { "name": "Abhijith G" },
   "repository": "https://github.com/theab10hd/zone-playground"
 }

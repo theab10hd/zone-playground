@@ -3,7 +3,7 @@
   "displayName": "zDev",
   "icon": "./assets/logo.png",
   "version": "1.1.0",
-  "description": "Local zOne dev, faster: plan a feature with you against the real code and build it after you approve, and rebuild the backend and copy the module DLLs into the frontend in one command",
+  "description": "zOne feature development: plan a feature with you against the real code on Opus (read-only investigation, impact analysis, open questions, a reviewed plan) and build it on Sonnet or Opus after you approve (/zdev:plan); stop the frontend, build the backend and copy the module DLLs into it in one command (/zdev:copydll)",
   "author": { "name": "Abhijith G" },
   "repository": "https://github.com/theab10hd/zone-playground"
 }

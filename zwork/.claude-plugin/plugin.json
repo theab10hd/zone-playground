@@ -3,7 +3,7 @@
   "displayName": "zWork",
   "icon": "./assets/logo.png",
   "version": "1.0.0",
-  "description": "Azure DevOps work, faster: see your bugs, tasks and PRs by state, review PRs and work items against the code, and plan and fix bugs and tasks by ID",
+  "description": "Azure DevOps work for zOne: a status dashboard and your bugs, tasks and PRs by state (/zwork:status, new, active, resolved); explain work items or review PRs against the code (/zwork:review); plan and fix bugs and tasks on their own branches (/zwork:plan); open linked PRs (/zwork:pr); check the connection (/zwork:init)",
   "author": { "name": "Abhijith G" },
   "repository": "https://github.com/theab10hd/zone-playground"
 }
