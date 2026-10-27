@@ -1,8 +1,8 @@
 {
   "name": "zone-test",
-  "displayName": "zOne Test (Playwright)",
+  "displayName": "zOne Test",
   "icon": "./assets/logo.png",
-  "version": "3.6.0",
+  "version": "3.6.1",
   "description": "QA review and end-to-end testing for the zOne app: find bugs in a feature's code by severity and fix them, then study a feature's code, design test cases, write the Playwright suite, run it, fix test defects, and produce a PDF report",
   "author": { "name": "Abhijith G" },
   "repository": "https://github.com/theab10hd/zone-playground"
