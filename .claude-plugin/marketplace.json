@@ -29,7 +29,7 @@
       "name": "zdev",
       "displayName": "zDev",
       "source": "./zdev",
-      "description": "Local zOne dev, faster: stop the running frontend, build the backend, run CopyDll.bat and copy the module DLLs into the frontend in one command."
+      "description": "Local zOne dev, faster: plan a feature with you against the real code and build it after you approve, and rebuild the backend and copy the module DLLs into the frontend in one command."
     }
   ]
 }

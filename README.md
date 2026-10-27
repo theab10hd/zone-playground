@@ -9,7 +9,7 @@ This is a growing set of Claude Code plugins that take the busywork out of the d
 | **zOne Test** | Designs, writes, runs and fixes Playwright E2E suites, and produces a PDF report |
 | **zOffice** | Drafts your zOffice time sheet from the day's Claude Code sessions, posts it, and shows the hours still needed |
 | **zWork** | Lists your Azure DevOps bugs, tasks and PRs by state, reviews PRs and work items against the code, and plans and fixes bugs by ID |
-| **zDev** | Rebuilds the backend and copies the module DLLs into the local frontend in one command |
+| **zDev** | Plans a feature with you against the real code and builds it after you approve; rebuilds the backend and copies the module DLLs into the local frontend in one command |
 | *More coming* | Doc preparation, debugging, refactoring |
 
 ---
@@ -299,8 +299,9 @@ Open Claude Code in the folder that holds the repositories you work on, so `revi
 
 # zDev
 
-A Claude Code plugin for running the zOne app locally.
+A Claude Code plugin for building and running the zOne app locally.
 
+- `/zdev:plan <feature description> [files, screenshots, PDFs, Figma links]` plans a feature the way two senior developers would. In read-only plan mode, on Opus, it reads every reference you give it, reads `CLAUDE.md`, rules, the engineering guide and graphify (if present), and traces the closest existing feature, V2 components, API, database, DataFields and permissions with parallel agents. It shows the impact, asks you the open decisions it found in the code (with a recommendation for each; grids get the full sorting, search, filter, paging, display settings and access-check checklist), then writes one plan: overview, existing system, scope, design, database, UI, ordered steps, risks, tests, acceptance criteria and decisions. You review and revise it until you approve. It then saves it to `.zdev/plans/` and asks whether to build it and on which model (Sonnet or Opus). It edits code only after you say go, stops to ask if anything material differs from the plan, runs the repo's checks, and hands off with a summary of files, migrations, checks run and manual steps.
 - `/zdev:copydll [zOne folder]` stops every running frontend (`dotnet run`, `dotnet watch` or the built exe, wherever it was started), builds the backend solution, runs `backend\zLink.References\CopyDll.bat`, copies every `.dll` from `C:\zOneDlls` into `frontend\bin\Debug\net7.0`, then tells you it is done and shows a Windows notification "Copy Dll Done".
 
 With no folder it finds the checkout that holds `zLink.References\CopyDll.bat`: up from the current folder, then `D:\zOne`, then every drive.
