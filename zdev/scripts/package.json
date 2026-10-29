@@ -1,0 +1,9 @@
+{
+  "name": "zdev-scripts",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "docx": "9.5.1",
+    "marked": "15.0.12"
+  }
+}

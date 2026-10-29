@@ -29,7 +29,7 @@
       "name": "zdev",
       "displayName": "zDev",
       "source": "./zdev",
-      "description": "zOne feature development: plan a feature with you against the real code on Opus (read-only investigation, impact analysis, open questions, a reviewed plan) and build it on Sonnet or Opus after you approve (/zdev:plan); stop the frontend, build the backend and copy the module DLLs into it in one command (/zdev:copydll)."
+      "description": "zOne feature development: plan a feature with you against the real code on Opus (read-only investigation, impact analysis, open questions, a reviewed plan) and build it on Sonnet or Opus after you approve (/zdev:plan); draft a Technical Requirement Document with you from your docs and the code, revise it until you accept, and export a styled DOCX (/zdev:new-trd); stop the frontend, build the backend and copy the module DLLs into it in one command (/zdev:copydll)."
     }
   ]
 }
