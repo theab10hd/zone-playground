@@ -6,7 +6,7 @@ Claude Code plugins for zOne work: plan and build features, test them, handle Az
 
 | Plugin | Version | What it does |
 | --- | --- | --- |
-| **zDev** (`zdev`) | 1.1.0 | Plans a feature with you against the real code and builds it after you approve; rebuilds the backend and copies the module DLLs into the local frontend |
+| **zDev** (`zdev`) | 1.2.0 | Plans a feature with you against the real code and builds it after you approve; writes TRDs with you and exports them to DOCX; rebuilds the backend and copies the module DLLs into the local frontend |
 | **zOne Test** (`zone-test`) | 3.6.1 | QA code review, then Playwright E2E tests: design, write, run, fix and report as PDF |
 | **zWork** (`zwork`) | 1.0.0 | Your Azure DevOps bugs, tasks and PRs: list, review, plan, fix and open PRs |
 | **zOffice** (`zoffice`) | 1.7.1 | Turns the day's Claude Code sessions into zOffice time sheet entries and posts them |
@@ -51,9 +51,12 @@ Open Claude Code in the folder that holds your repositories (for example the one
 | Command | What it does |
 | --- | --- |
 | `/zdev:plan <feature> [files, screenshots, PDFs, Figma links]` | Plans a feature with you on Opus, read-only: reads your references and the code, shows the impact, asks the open decisions, writes a plan you review, then builds it on Sonnet or Opus only after you say go |
+| `/zdev:new-trd <feature> [PRDs, old TRDs, screenshots, PDFs, DOCX, HTML walkthrough]` | Drafts a FedRAMP-aware, self-contained Technical Requirement Document on Opus from your docs, the code and the HTML walkthrough (opened in Claude in Chrome), revises it with you section by section, asks instead of guessing, and exports the accepted TRD to a styled DOCX |
 | `/zdev:copydll [zOne folder]` | Stops the running frontend, builds the backend, runs `CopyDll.bat`, copies `C:\zOneDlls\*.dll` into `frontend\bin\Debug\net7.0` and notifies when done (Windows) |
 
 Example: `/zdev:plan add a Region filter to the Lease grid, see screenshot.png`
+
+TRD drafts and DOCX files go to `.zdev/trd/<feature>/` in your workspace. Every DOCX uses the same style (A4, narrow margins, Calibri), set once in `zdev/scripts/trd-style.mjs`.
 
 ### zOne Test
 
@@ -96,7 +99,7 @@ Example: `/zoffice:log acme --start 9:15 AM --break 1:00 PM-1:45 PM`
 
 | Plugin | Needs |
 | --- | --- |
-| **zDev** | `plan`: nothing extra; Figma links need the Figma connector. `copydll`: Windows and the .NET SDK on the path |
+| **zDev** | `plan`, `new-trd`: nothing extra; Figma links need the Figma connector; HTML walkthroughs need Claude in Chrome; the DOCX export installs its two npm packages on first use. `copydll`: Windows and the .NET SDK on the path |
 | **zOne Test** | A project with `playwright.config.*`, `npm install` run there, and the app reachable. It finds and runs your existing login setup. Optional: a [graphify](https://github.com/deadmade/dead-claude-skills) graph for faster discovery |
 | **zWork** | An Azure DevOps token and the MCP server. Run `/zwork:init`; it prints the exact steps |
 | **zOffice** | Your sign-in in environment variables `ZOFFICE_USERNAME` and `ZOFFICE_PASSWORD`. Run `/zoffice:log` once to set the zOffice URL, then `node "<plugin>/scripts/post-timesheet.mjs" --save-options` to save your projects |
