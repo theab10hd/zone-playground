@@ -14,10 +14,17 @@ export const page = {
 };
 export const contentWidth = page.width - 2 * page.margin;
 
-// top-right of every page
-export const header = {
-  text: "zOne Playground",
-  link: "https://github.com/theab10hd/zone-playground.git",
+// small centred credit at the very end of the document; the version comes from plugin.json
+export const credit = {
+  text: "Made with zOne Playground | zDev v",
+  feedback: "For any issue or feedback ",
+  link: "https://github.com/theab10hd/zone-playground",
+};
+
+// snapshots are for reference only, so they stay small; px at 96 dpi
+export const image = {
+  maxWidth: 4.5 * 96,
+  maxHeight: 3.5 * 96,
 };
 
 export const font = {
