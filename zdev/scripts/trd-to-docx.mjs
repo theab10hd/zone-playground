@@ -1,10 +1,10 @@
 // Convert a TRD Markdown file to DOCX in the house style (trd-style.mjs).
 // Usage: node trd-to-docx.mjs <input.md> <output.docx>
-import { readFileSync, writeFileSync } from "node:fs";
-import { basename } from "node:path";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { basename, dirname, extname, resolve } from "node:path";
 import { marked } from "marked";
 import {
-  AlignmentType, BorderStyle, Document, ExternalHyperlink, Footer, Header, HeadingLevel, LevelFormat,
+  AlignmentType, BorderStyle, Document, ExternalHyperlink, Footer, HeadingLevel, ImageRun, LevelFormat,
   Packer, PageNumber, Paragraph, ShadingType, Table, TableCell, TableRow, TextRun, WidthType,
 } from "docx";
 import * as S from "./trd-style.mjs";
@@ -20,6 +20,35 @@ const warn = (msg) => warnings.includes(msg) || warnings.push(msg);
 const decode = (s) =>
   s.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, "&");
 const plain = (tokens = []) => tokens.map((t) => (t.tokens ? plain(t.tokens) : decode(t.text ?? ""))).join("");
+const version = JSON.parse(readFileSync(new URL("../.claude-plugin/plugin.json", import.meta.url), "utf8")).version;
+
+// pixel size from the PNG IHDR or the JPEG SOFn header
+function imageSize(buf) {
+  if (buf.readUInt32BE(0) === 0x89504e47) return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+  for (let i = 2; i + 9 < buf.length; i += 2 + buf.readUInt16BE(i + 2)) {
+    const m = buf[i + 1];
+    if (m >= 0xc0 && m <= 0xcf && m !== 0xc4 && m !== 0xc8 && m !== 0xcc)
+      return { width: buf.readUInt16BE(i + 7), height: buf.readUInt16BE(i + 5) };
+  }
+  return null;
+}
+
+function image(t, style) {
+  const fallback = (why) => {
+    warn(`image "${t.href}" ${why}; rendered as text`);
+    return new TextRun({ ...style, text: `[Image: ${t.text || t.href}]`, italics: true });
+  };
+  const type = { ".png": "png", ".jpg": "jpg", ".jpeg": "jpg" }[extname(t.href).toLowerCase()];
+  if (!type || /^[a-z]+:/i.test(t.href)) return fallback("is not a local PNG/JPG");
+  const file = resolve(dirname(input), decodeURI(t.href));
+  if (!existsSync(file)) return fallback("not found");
+  const data = readFileSync(file);
+  const px = imageSize(data);
+  if (!px) return fallback("has an unreadable size");
+  const scale = Math.min(1, S.image.maxWidth / px.width, S.image.maxHeight / px.height);
+  return new ImageRun({ type, data, altText: { name: t.text, description: t.text, title: t.text },
+    transformation: { width: Math.round(px.width * scale), height: Math.round(px.height * scale) } });
+}
 
 // ---------- inline ----------
 function runs(tokens = [], style = {}) {
@@ -42,10 +71,7 @@ function runs(tokens = [], style = {}) {
         }));
         break;
       case "br": out.push(new TextRun({ ...style, break: 1 })); break;
-      case "image":
-        warn(`image "${t.href}" is not embedded; rendered as text`);
-        out.push(new TextRun({ ...style, text: `[Image: ${t.text || t.href}]`, italics: true }));
-        break;
+      case "image": out.push(image(t, style)); break;
       case "html":
         if (/^<br\s*\/?>$/i.test(t.text.trim())) out.push(new TextRun({ ...style, break: 1 }));
         else if (!/^<!--/.test(t.text.trim())) warn(`raw HTML or unfilled <placeholder> dropped: ${t.text.trim().slice(0, 40)}`);
@@ -73,18 +99,18 @@ function blocks(tokens, ctx = { level: 0 }) {
           titleDone = true;
           docTitle = plain(t.tokens);
           out.push(new Paragraph({ style: "Title", children: runs(t.tokens) }));
-          // Word ignores clicks on header links from the body, so the link is repeated here
-          out.push(new Paragraph({ children: [new ExternalHyperlink({ link: S.header.link,
-            children: [new TextRun({ text: S.header.text, size: S.size.table, color: S.color.link })] })] }));
         } else {
           // the single H1 is the title, so ## is Heading 1 in Word
           const depth = Math.min(Math.max(t.depth - 2, 0), 3);
           out.push(new Paragraph({ heading: headingLevels[depth], children: runs(t.tokens) }));
         }
         break;
-      case "paragraph":
-        out.push(new Paragraph({ children: runs(t.tokens) }));
+      case "paragraph": {
+        // a paragraph holding only images is a figure: centred and kept with its caption
+        const figure = t.tokens.some((x) => x.type === "image") && t.tokens.every((x) => x.type === "image" || !x.raw.trim());
+        out.push(new Paragraph({ children: runs(t.tokens), ...(figure && { alignment: AlignmentType.CENTER, keepNext: true }) }));
         break;
+      }
       case "list":
         out.push(...list(t, ctx.level));
         break;
@@ -212,6 +238,13 @@ function code(text) {
 
 // ---------- document ----------
 const body = blocks(marked.lexer(readFileSync(input, "utf8")));
+const muted = { size: S.size.headerFooter, color: S.color.muted };
+body.push(
+  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 600, after: 0 },
+    children: [new TextRun({ ...muted, text: S.credit.text + version })] }),
+  new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ ...muted, text: S.credit.feedback }),
+    new ExternalHyperlink({ link: S.credit.link, children: [new TextRun({ ...muted, text: S.credit.link })] })] }),
+);
 
 const heading = (sz, clr, spacing) => ({
   run: { font: S.font.body, size: sz, bold: true, color: clr },
@@ -264,10 +297,6 @@ const doc = new Document({
           header: S.page.headerFooter, footer: S.page.headerFooter },
       },
     },
-    headers: { default: new Header({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [
-      new ExternalHyperlink({ link: S.header.link,
-        children: [new TextRun({ text: S.header.text, size: S.size.headerFooter, color: S.color.link })] }),
-    ] })] }) },
     footers: { default: new Footer({ children: [small([["Page ", PageNumber.CURRENT, " of ", PageNumber.TOTAL_PAGES]], AlignmentType.CENTER)] }) },
     children: body,
   }],

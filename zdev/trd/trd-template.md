@@ -1,6 +1,6 @@
 # <Feature Name> – Technical Requirement Document
 
-<!-- Template for /zdev:new-trd. Keep the section order and numbering. Delete a section only when it truly does not apply, and say so in one line instead ("No database change"). Remove every guidance comment before the draft is shared. No Mermaid, images or raw HTML: the DOCX converter renders Markdown headings, paragraphs, lists, task lists, tables, code blocks and block quotes only. -->
+<!-- Template for /zdev:new-trd. Keep the section order and numbering. Delete a section only when it truly does not apply, and say so in one line instead ("No database change"). Remove every guidance comment before the draft is shared. No Mermaid or raw HTML: the DOCX converter renders Markdown headings, paragraphs, lists, task lists, tables, code blocks, block quotes and local PNG/JPG images (Figma snapshots, `![caption](images/<file>.png)` relative to this file) only. -->
 
 | Item | Value |
 | --- | --- |
@@ -153,7 +153,9 @@ Errors
 
 #### UI
 
-<!-- Screens, V2 components reused (with the component name), states: loading, empty, error, read-only, no-permission. Grid: sort, search, filter, paging, display settings, column config. -->
+<!-- Screens, V2 components reused (with the component name), states: loading, empty, error, read-only, no-permission. Grid: sort, search, filter, paging, display settings, column config. When there is a Figma design: one snapshot per screen, dialog or state this task builds or changes (nothing out of scope or unchanged), cropped to the part that matters (panel, dialog, form, grid, message), not the whole page, each followed by a one-line caption naming the Figma frame and what to notice (fields, order, messages). -->
+
+![<Screen / state> – Figma frame "<frame name>"](images/<task-n>-<screen>.png)
 
 #### Acceptance criteria
 
