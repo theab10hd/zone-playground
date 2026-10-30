@@ -15,7 +15,7 @@ Understand → Investigate → Ask → Draft → Review and revise (loop) → Qu
 
 Rules that hold in every step:
 
-- **Never guess.** Every fact about the code is **verified** (with `path:line`) or written as an **assumption** in section 2 and raised as a question. Every business rule comes from the request, a supplied document or the developer's answer.
+- **Never guess.** Every fact about the code is **verified** (with `path:line`) or written as an **assumption** in the Assumptions section and raised as a question. Every business rule comes from the request, a supplied document or the developer's answer.
 - **Your intended change and the developer's intended change must be the same.** When a review comment can be read two ways, ask before editing. Restate what you will change in one line before you change it.
 - **FedRAMP.** zOne is FedRAMP authorized. Every solution stays inside the authorized boundary: no new third-party service, CDN, SaaS or outbound data flow; FIPS 140 validated crypto only; TLS 1.2+; least privilege; tenant isolation; audit of security-relevant actions; no secrets, tokens or PII in logs or error responses; server-side validation of every input. Raise any change that may need a FedRAMP significant change request.
 - **One self-contained file.** The TRD is the only thing a developer or an AI agent will be given, with at most a one-line request. Everything needed to build, test and support the feature is in it: names, paths, rules, messages, payloads, tables, decisions. Never write "as discussed", "see chat" or point to a file the reader will not have; copy the fact in.
@@ -99,37 +99,49 @@ Before drafting, list the decisions that steps 1 and 2 did not settle. Each must
 - **Needs your decision**: business rules, scope, schema shape, API shape, privileges, UX, backward compatibility, anything with two real options.
 - **I'll follow the convention**: details the codebase settles. One line each so the developer can object.
 
-Ask with `AskUserQuestion`, grouped, up to four questions per call. When there are options, one sentence each, your recommendation first marked `(Recommended)` with the reason from this codebase. If the developer does not know, record it as an assumption or an open item. Questions that do not block a useful first draft can wait for review: put them in section 18 and say so.
+Ask with `AskUserQuestion`, grouped, up to four questions per call. When there are options, one sentence each, your recommendation first marked `(Recommended)` with the reason from this codebase. If the developer does not know, record it as an assumption or an open item. Questions that do not block a useful first draft can wait for review: put them in Open questions and say so.
 
 ## 4. Draft the TRD
 
 Read the template `${CLAUDE_PLUGIN_ROOT}/trd/trd-template.md` (if not expanded, Glob `**/zdev/trd/trd-template.md` under `~/.claude/plugins/`) and fill it. Write the draft to `.zdev/trd/<feature-slug>/<Feature-Name>-TRD.md` at the workspace root, and add `.zdev/` to that repo's `.git/info/exclude` if it is not there. Keep **one** current draft: revise it in place, never write a second version file.
 
-What every TRD must do:
+What every TRD must do (sections by name; numbers are in the template):
 
-- **Problem and value**: section 1 states the problem, who has it and the business value, not just the solution.
-- **Reasoning**: section 4 has one decision block per major design choice, answering all six questions: why this approach, alternatives considered, risks and trade-offs, components impacted, testing and support, edge case and failure behaviour.
-- **APIs**: every endpoint has a short description, a realistic request payload and response in `json` code blocks (field names as the codebase writes them, values that make sense), the privilege, and its error cases with exact messages.
-- **Assumptions, dependencies and constraints** up front in section 2.
-- **Database inventory**: section 12 lists every table, view, index, procedure and seed data the feature **creates**, **alters** or **uses without change**, with schema, access type, existing-data impact and the task it belongs to, taken from the real schema found in step 2. Write "None" for an empty group, never leave it out.
-- **Optimal database design**: section 12 explains the schema's shape (normalisation, types, nullability, delete behaviour), lists every index with the query it serves, and every constraint with the business rule it enforces. Design it like a senior DBA against the real schema: check existing indexes first so none is duplicated, cover the real search, sort, filter and in-use queries, enforce uniqueness and rules in the database (unique, check, foreign key Restrict), and weigh each index's write cost.
-- **Caching**: section 10 says, for each piece of data read often and changed rarely, whether to cache it, where, the key, the expiry and the invalidation, or why not. Use the cache the codebase already has; keys include AccountId; nothing outside the FedRAMP boundary; no PII or secrets in an unencrypted cache.
-- **Implementation brief**: section 19 is the map for a developer or an AI agent starting from the TRD alone: the feature in one paragraph, the codebase map (layer, path, existing pattern to copy, change), build order, rules that must not be broken, and the definition of done.
-- **Future scaling**: section 20 says how the design grows: data volume, load, more entities or modules, integrations and configuration, each with today's limit, what triggers the change and the path forward.
-- **Walkthrough and Figma**: the screens, fields, messages and states seen in step 1 appear in each task's UI and functional flow.
-- **Figma snapshots**: when there is a Figma design, each task's UI section embeds the snapshots of the screens and states it builds, as `![<Screen / state> – Figma frame "<frame name>"](images/<file>.png)` followed by a one-line caption of what to notice. Put the journey overview in section 1.3 (Scope). Only for areas a task builds or changes; no out-of-scope, unchanged, decorative or duplicate images.
-- **Edge cases and failures** inside each functional flow where they happen, and collected in section 11.
-- **Impact** on existing modules, integrations, APIs, database and user workflows in section 7, from the real callers and consumers found in step 2.
-- **Security, FedRAMP, audit, performance, scalability and operations** in sections 8 to 10 and 14, each row specific to this feature or marked `n/a – <reason>`.
+- **Overview**: the feature in simple terms, the problem, who has it, the business objective and value, scope and out of scope.
+- **Requirement mapping**: every PRD requirement in its own row, mapped to the technical implementation and the TRD section that delivers it, with comments or assumptions. A requirement not delivered says so and why. Nothing in the PRD is left unmapped.
+- **Assumptions, dependencies and constraints** up front, including external dependencies.
+- **Existing system analysis**: current behaviour and components with `path:line`, existing limitations, and the reason for change.
+- **Proposed solution**: architecture overview, component interaction, request flow as a plain-text diagram in a `text` code block plus numbered steps, and data flow as before/after sample rows per scenario (create, update, delete, edge cases). Ask once whether the developer also wants the data-flow samples in Excel; if yes, write `<Feature-Name>-DataFlow.xlsx` next to the draft with the `anthropic-skills:xlsx` skill, one sheet per scenario.
+- **Key decisions**: one block per major design choice, answering all six questions: why this approach, alternatives considered, risks and trade-offs, components impacted, testing and support, edge case and failure behaviour.
+- **API changes**: every endpoint has a short description, authentication and privilege, a realistic request payload and response in `json` code blocks (field names as the codebase writes them, values that make sense), validation rules per field with messages, and error handling with exact messages.
+- **UI changes**: link the PRD and Figma for screens, new screens and fields instead of copying them. Document validation rules, error messages, user permissions per role, the V2 components reused and the screen states.
+- **Figma snapshots**: when there is a Figma design, each task's UI changes section embeds the snapshots of the screens and states it builds, as `![<Screen / state> – Figma frame "<frame name>"](images/<file>.png)` followed by a one-line caption of what to notice. Put the journey overview in Overview → Scope. Only for areas a task builds or changes; no out-of-scope, unchanged, decorative or duplicate images. Snapshots show the reader the UI; the full screen and field lists still stay as links to the PRD and Figma.
+- **Edge cases and failures** inside each functional flow where they happen (happy path first, then errors, edge cases and concurrency), and collected in Edge cases and failure scenarios.
+- **Impact** on existing modules, integrations, APIs, database and user workflows, from the real callers and consumers found in step 2.
+- **Security considerations**: authentication, authorization, sensitive data, data exposure risks, audit, input validation and data retention; the abuse and exposure review answers plainly "could this feature be abused or expose data unintentionally?"; every NIST / FedRAMP control row specific to this feature or `n/a – <reason>`.
+- **Monitoring and logging**: logs to add (no PII or secrets), metrics, alerts (or "None" with the reason), the support runbook and the operational owner.
+- **Performance and scalability**: expected volume, query impact, indexing strategy, bulk operations, pagination, and an honest answer to "will this still perform at 10x?".
+- **Caching**: for each piece of data read often and changed rarely, whether to cache it, where, the key, the expiry and the invalidation, or why not. Use the cache the codebase already has; keys include AccountId; nothing outside the FedRAMP boundary; no PII or secrets in an unencrypted cache.
+- **Database changes, optimal design**: why each change is required; the schema's shape (normalisation, types, nullability, delete behaviour); relationships; every index with the query it serves; every constraint with the business rule it enforces. Design it like a senior DBA against the real schema: check existing indexes first so none is duplicated, cover the real search, sort, filter and in-use queries, enforce uniqueness and rules in the database (unique, check, foreign key Restrict), and weigh each index's write cost.
+- **Database inventory**: every table, view, index, procedure and seed data the feature **creates**, **modifies** (columns added and why) or **uses without change**, with schema, access type, existing-data impact and the task it belongs to, taken from the real schema found in step 2. Write "None" for an empty group, never leave it out.
+- **Migration strategy**: schema migration name, module, order and rollback always; data migration steps and validation only when existing data is involved. If the Data team owns the data migration, say so in one line with the owner.
+- **Testing strategy**: unit, integration, E2E automation, regression, security, performance and UAT, with positive and negative cases.
+- **Deployment, cutover and rollback**: deployment approach, a cutover plan written as a go-live playbook (steps in order, who, downtime, point of no return), post-deployment validation and rollback.
 - **Acceptance criteria** per task cover positive and negative scenarios: invalid input, missing privilege, another tenant's id, concurrent edit, dependency failure, empty and large data.
-- **Risks, trade-offs and items needing discussion** in sections 16 and 18.
+- **End-user impact**: clicks before and after, discoverability, error messages, accessibility, workflow efficiency.
+- **Risks and mitigations**: every TRD has them, each with impact, likelihood and mitigation.
+- **General design considerations**: answer each area for this design: architecture alignment (reuse, no needless complexity, no new debt), SOLID (where each principle applies; maintainable, testable, loosely coupled components), security and compliance, scalability, supportability, testability, user experience and future extensibility. Point to the section that holds the detail instead of repeating it.
+- **Implementation brief**: the map for a developer or an AI agent starting from the TRD alone: the feature in one paragraph, the codebase map (layer, path, existing pattern to copy, change), build order, rules that must not be broken, and the definition of done.
+- **Future scaling and extensibility**: how the design grows: data volume, load, more entities or modules, integrations, configuration over customisation, backward compatibility and upgrade paths, each with today's limit, what triggers the change and the path forward.
+- **Walkthrough and Figma**: the validation rules, messages, permissions and states seen in step 1 appear in each task's UI changes and functional flow.
+- **Appendix A – TRD design checklist**: tick an item only when the TRD really covers it; an unticked item gets a one-line reason.
 - **Four perspectives**, checked before you share the draft:
   - Developer: can it be built from this TRD alone? Is there a simpler or more maintainable way?
-  - Tester: what could go wrong, and is every scenario in sections 11 and 13 testable?
-  - Support engineer: can a production issue be diagnosed from the logs and the runbook in section 9?
-  - End user: is the journey simpler and clearer (section 15)?
+  - Tester: what could go wrong, and is every edge case and test scenario testable?
+  - Support engineer: can a production issue be diagnosed from the logs, metrics, alerts and runbook?
+  - End user: is the journey simpler and clearer?
 
-Writing rules: plain, short sentences in the house tone of the old TRDs; tables for structured facts; exact user-facing messages in quotes; real names of tables, columns, endpoints, privileges and components; `path:line` only in section 3 and where it helps a developer find the code. Mark anything unconfirmed **(Assumed)** inline. Only Markdown the converter supports: headings, paragraphs, bullet, numbered and task lists, tables, fenced code blocks, block quotes, bold, italic, inline code, links and local PNG/JPG images from the `images/` folder next to the draft. No Mermaid, remote images or raw HTML; describe flows as numbered steps. Remove every guidance comment from the template.
+Writing rules: plain, short sentences in the house tone of the old TRDs; tables for structured facts; exact user-facing messages in quotes; real names of tables, columns, endpoints, privileges and components; `path:line` only in Existing system analysis, the implementation brief and where it helps a developer find the code. Mark anything unconfirmed **(Assumed)** inline. Only Markdown the converter supports: headings, paragraphs, bullet, numbered and task lists, tables, fenced code blocks, block quotes, bold, italic, inline code, links and local PNG/JPG images from the `images/` folder next to the draft. No Mermaid, remote images or raw HTML; draw diagrams as plain text inside a `text` code block, under 90 characters wide. Remove every guidance comment from the template.
 
 Then, in chat: the file path, a five-line summary of the solution, the assumptions you made, and the open items. Ask the developer to review it.
 
@@ -140,27 +152,28 @@ Loop until the developer accepts. For each comment or new requirement:
 1. Restate it in one line as the change you intend to make. If it is ambiguous, conflicts with another decision or the code, or has more than one reasonable reading, ask first (with options and a recommendation); do not pick one silently.
 2. Check what it touches: other sections, decisions, schema, APIs, consumers, FedRAMP controls. Re-investigate the code when the change needs it. Say the consequences before applying.
 3. Edit the draft in place. Update every section the change reaches, not only the one mentioned (a new column changes the data model, API payloads, acceptance criteria, migration and tests).
-4. Add the agreed decision to section 17, bump the revision in the metadata table and section 21, and reply with a short list of what changed, by section.
+4. Add the agreed decision to Decisions from review, bump the revision in the metadata table and Revision history, and reply with a short list of what changed, by section.
 
 If the developer suggests something that breaks a FedRAMP rule, a platform convention or existing data, say so plainly, explain the risk and offer a compliant alternative. Do not write it in silently, and do not refuse without an alternative.
 
 ## 6. Quality gate
 
-Before calling the TRD final, check it against this list and fix what fails:
+Before calling the TRD final, go through Appendix A – TRD design checklist item by item against the draft, then this list, and fix what fails:
 
 - [ ] Every template section is filled or explicitly marked not applicable.
+- [ ] Every PRD requirement is in Requirement mapping.
 - [ ] Every decision block answers all six questions.
-- [ ] Every endpoint has description, privilege, request, response and errors.
+- [ ] Every endpoint has description, authentication, request, response, validation rules and error handling.
 - [ ] Acceptance criteria include negative scenarios for every task.
-- [ ] Section 8 covers each control for this feature; no new service or data flow outside the boundary.
-- [ ] No unverified code claim; every assumption is in section 2 or 18.
+- [ ] The security section answers the abuse and exposure question and covers each control; no new service or data flow outside the boundary.
+- [ ] No unverified code claim; every assumption is in Assumptions or Open questions.
 - [ ] Names in the TRD match the code and each other across sections.
-- [ ] Section 12 lists every database object created, altered or used, and matches the tasks' data models.
+- [ ] The database inventory lists every object created, modified or used, and matches the tasks' data models.
 - [ ] Every index serves a named query and none duplicates an existing one; every business rule the database can enforce has a constraint.
-- [ ] Section 10 has a caching decision for every hot, rarely changing read, with invalidation.
-- [ ] Section 20 covers future scaling for this feature, not generic advice.
+- [ ] Performance has a caching decision for every hot, rarely changing read, with invalidation, and a real 10x answer.
+- [ ] Future scaling covers this feature, not generic advice.
 - [ ] With a Figma design: every screen, dialog and key state a task builds has its snapshot in that task's UI section, every image file exists, each caption names its Figma frame, every snapshot except the journey overview is cropped to the part it describes, and no snapshot shows an area that no task builds or changes.
-- [ ] **Agent test**: read the TRD as an agent that has never seen this chat, the PRD or the walkthrough. Could you build the feature from it alone? Copy in anything you would have to ask for.
+- [ ] **Agent test**: read the TRD as an agent that has never seen this chat, the PRD or the walkthrough. Could you build the feature from it alone? Copy in anything you would have to ask for (UI screens and fields may stay as links to the PRD and Figma).
 - [ ] Developer, tester, support and end-user questions are answered.
 
 Report the result in chat (what you fixed, what is still open) and ask the developer to accept the TRD.

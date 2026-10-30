@@ -6,7 +6,7 @@ Claude Code plugins for zOne work: plan and build features, test them, handle Az
 
 | Plugin | Version | What it does |
 | --- | --- | --- |
-| **zDev** (`zdev`) | 1.2.0 | Plans a feature with you against the real code and builds it after you approve; writes TRDs with you and exports them to DOCX; rebuilds the backend and copies the module DLLs into the local frontend |
+| **zDev** (`zdev`) | 1.1.3 | Plans a feature with you against the real code and builds it after you approve; writes TRDs with you and exports them to DOCX; rebuilds the backend and copies the module DLLs into the local frontend |
 | **zOne Test** (`zone-test`) | 3.6.1 | QA code review, then Playwright E2E tests: design, write, run, fix and report as PDF |
 | **zWork** (`zwork`) | 1.0.0 | Your Azure DevOps bugs, tasks and PRs: list, review, plan, fix and open PRs |
 | **zOffice** (`zoffice`) | 1.7.1 | Turns the day's Claude Code sessions into zOffice time sheet entries and posts them |

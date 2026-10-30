@@ -1,6 +1,6 @@
 # <Feature Name> – Technical Requirement Document
 
-<!-- Template for /zdev:new-trd. Keep the section order and numbering. Delete a section only when it truly does not apply, and say so in one line instead ("No database change"). Remove every guidance comment before the draft is shared. No Mermaid or raw HTML: the DOCX converter renders Markdown headings, paragraphs, lists, task lists, tables, code blocks, block quotes and local PNG/JPG images (Figma snapshots, `![caption](images/<file>.png)` relative to this file) only. -->
+<!-- Template for /zdev:new-trd. Keep the section order and numbering. Delete a section only when it truly does not apply, and say so in one line instead ("No database change"). Remove every guidance comment before the draft is shared. No Mermaid or raw HTML: the DOCX converter renders Markdown headings, paragraphs, lists, task lists, tables, code blocks, block quotes and local PNG/JPG images (Figma snapshots, `![caption](images/<file>.png)` relative to this file) only. Diagrams are plain-text drawings inside a code block. -->
 
 | Item | Value |
 | --- | --- |
@@ -16,11 +16,13 @@
 
 ## 1. Overview
 
+<!-- Describe the feature in simple terms first: two or three sentences a new team member understands. -->
+
 ### 1.1 Problem statement
 
 <!-- What is wrong or missing today, who feels it, and how we know (PRD, customer, bug, data). -->
 
-### 1.2 Business value
+### 1.2 Business objective and value
 
 <!-- The outcome for customers and the business. Measurable where possible. -->
 
@@ -40,27 +42,79 @@
 | --- | --- |
 | <term> | <meaning> |
 
-## 2. Assumptions, dependencies and constraints
+## 2. Requirement mapping
+
+<!-- Every PRD requirement, one row each, linked to where the TRD solves it. Nothing in the PRD may be missing; a requirement not delivered says so and why. -->
+
+| ID | PRD requirement | Technical implementation | TRD section | Comments / assumptions |
+| --- | --- | --- | --- | --- |
+| R1 | <requirement as the PRD states it> | <how it is built> | Task <n> | <assumption, limit or "Not delivered – reason"> |
+
+## 3. Assumptions, dependencies and constraints
 
 | Type | Item | Status / Owner |
 | --- | --- | --- |
 | Assumption | <what we take as true; must be confirmed> | Confirmed by <name> / Open |
-| Dependency | <other team, module, migration, PRD sign-off> | <owner> |
+| Dependency | <other team, module, migration, PRD sign-off, external system> | <owner> |
 | Constraint | <FedRAMP boundary, .NET version, platform page size, release window> | Fixed |
 
-## 3. Existing system
+## 4. Existing system analysis
 
-<!-- What the code does today, verified with file:line. The closest existing feature this one follows, and what is reused unchanged. -->
+<!-- The current state, verified with file:line, before any solution. The closest existing feature this one follows, and what is reused unchanged. -->
 
-| Area | Current behaviour | Reference |
+**Current behaviour and components**
+
+| Area | Current behaviour | Component | Reference |
+| --- | --- | --- | --- |
+| <area> | <behaviour> | <controller / service / table / screen> | `<path>:<line>` |
+
+**Existing limitations**
+
+- <what the current system cannot do or does badly, with evidence>
+
+**Reason for change**
+
+<why the limitations above must be fixed now, tied to the problem statement>
+
+## 5. Proposed solution
+
+### 5.1 Architecture overview
+
+<!-- Two or three paragraphs: the shape of the solution end to end and how it fits the existing platform layers. -->
+
+### 5.2 Component interaction
+
+| Component | Responsibility | Talks to |
 | --- | --- | --- |
-| <area> | <behaviour> | `<path>:<line>` |
+| <component> | <single responsibility> | <other components> |
 
-## 4. Solution overview and key decisions
+### 5.3 Request flow
 
-<!-- Two or three paragraphs: the shape of the solution end to end. Then one block per major decision. -->
+<!-- A simple flow diagram drawn in text, then the steps. Keep it narrow (under 90 characters) so it fits the page. -->
 
-### 4.1 Decision: <title>
+```text
+User ──> <Screen> ──> POST api/v1/<area> ──> <Controller> ──> <Service> ──> <schema>.<Table>
+                                               │
+                                               └──> Activity log
+```
+
+1. <step>
+
+### 5.4 Data flow
+
+<!-- How sample data looks in each table at each scenario (create, update, delete, edge case). Use realistic rows. If the developer wants it, the same tables are also exported to an Excel file. -->
+
+**Scenario: <name>**
+
+| Table | Column | Before | After |
+| --- | --- | --- | --- |
+| <schema>.<Table> | <column> | <value> | <value> |
+
+### 5.5 Key decisions
+
+<!-- One block per major design choice. -->
+
+#### Decision: <title>
 
 | Question | Answer |
 | --- | --- |
@@ -71,7 +125,7 @@
 | Testing and support | <how it is tested, how support diagnoses it> |
 | Edge cases and failure behaviour | <what happens when it fails or input is odd> |
 
-## 5. Tasks
+## 6. Tasks
 
 <!-- One task per independently buildable and testable unit (usually backend API, frontend, database, report). Repeat the block. -->
 
@@ -109,20 +163,22 @@
 
 #### Functional flow
 
-<!-- Numbered steps of the real flow, with validation, edge cases, failures and messages inline where they happen. Quote exact user-facing messages. -->
+<!-- Numbered steps of the real flow: happy path first, then validation, errors, edge cases and concurrency inline where they happen. Quote exact user-facing messages. -->
 
 1. <step>
    - <rule / validation / message>
 
-#### API specifications
+#### API changes
 
-| Method | Endpoint | Privilege | Description |
+| Method | Endpoint | Authentication / privilege | Description |
 | --- | --- | --- | --- |
-| POST | `api/v1/<area>/list` | <PRIVILEGE (M/V)> | <short description> |
+| POST | `api/v1/<area>/list` | Signed-in user, <PRIVILEGE (M/V)> | <short description> |
 
 ##### POST `api/v1/<area>/list`
 
 <one or two sentences: what it does and who calls it>
+
+Authentication: <existing session / token; privilege and level; account and data scope>
 
 Request
 
@@ -144,18 +200,35 @@ Response – 200
 }
 ```
 
-Errors
+Validation rules
+
+| Field | Rule | Message |
+| --- | --- | --- |
+| <field> | <required, length, format, range, exists in account> | "<exact message>" |
+
+Error handling
 
 | Status | When | Message |
 | --- | --- | --- |
 | 401 | Missing privilege | — |
 | 500 | <validation / not found / conflict> | "<exact message>" |
 
-#### UI
+#### UI changes
 
-<!-- Screens, V2 components reused (with the component name), states: loading, empty, error, read-only, no-permission. Grid: sort, search, filter, paging, display settings, column config. When there is a Figma design: one snapshot per screen, dialog or state this task builds or changes (nothing out of scope or unchanged), cropped to the part that matters (panel, dialog, form, grid, message), not the whole page, each followed by a one-line caption naming the Figma frame and what to notice (fields, order, messages). -->
+<!-- Screens, new screens and fields are in the PRD and Figma: link them, do not copy them. Document only what they do not: validation rules, error messages, permissions, V2 components reused, and states (loading, empty, error, read-only, no permission). Grid: sort, search, filter, paging, display settings, column config. When there is a Figma design: one snapshot per screen, dialog or state this task builds or changes (nothing out of scope or unchanged), cropped to the part that matters (panel, dialog, form, grid, message), not the whole page, each followed by a one-line caption naming the Figma frame and what to notice (fields, order, messages). -->
+
+Screens and fields: <PRD section / Figma link>
 
 ![<Screen / state> – Figma frame "<frame name>"](images/<task-n>-<screen>.png)
+
+| Field / action | Validation rule | Error message |
+| --- | --- | --- |
+| <field> | <rule> | "<exact message>" |
+
+| Role / privilege | Can see | Can do |
+| --- | --- | --- |
+| <privilege (V)> | <screens, fields> | <read only> |
+| <privilege (M)> | <screens, fields> | <add, edit, delete> |
 
 #### Acceptance criteria
 
@@ -164,19 +237,21 @@ Errors
 - [ ] <positive: given / when / then>
 - [ ] <negative: invalid input, missing privilege, other tenant's id, concurrent edit, dependency down>
 
-## 6. API conventions
+## 7. API conventions
 
 | Topic | Convention |
 | --- | --- |
 | Routes and verbs | <as the platform does it, verified> |
+| Authentication | <existing mechanism; no new auth path> |
 | Paging | <start, page size> |
 | Search and sort | <request model> |
 | Success | <response envelope> |
 | Errors | <status codes and error body> |
 | Concurrency | <rowVersion rule, or n/a> |
 | Tenant and access | <account scoping and privilege filter> |
+| Backward compatibility | <existing contracts unchanged; new fields additive> |
 
-## 7. Impact analysis
+## 8. Impact analysis
 
 | Area | Change | Affected consumers | Risk | Mitigation |
 | --- | --- | --- | --- | --- |
@@ -186,11 +261,33 @@ Errors
 | Database | | | | |
 | User workflows | | | | |
 
-## 8. Security and FedRAMP compliance
+## 9. Security considerations and FedRAMP compliance
+
+**Summary**
+
+| Topic | This feature |
+| --- | --- |
+| Authentication | <existing auth only> |
+| Authorization | <privileges, least privilege, data scope> |
+| Sensitive data | <PII, financial, security data: what, where stored, classification> |
+| Data exposure risks | <what could leak, to whom, through which endpoint, export or log> |
+| Audit requirements | <what must be auditable> |
+| Input validation | <server side, every input> |
+| Data retention | <how long data is kept, deletion rules, or existing policy> |
+
+**Abuse and exposure review**
+
+<!-- Answer plainly: could this feature be abused or expose data unintentionally? Think of another tenant's ids, a lower-privilege user, mass export, enumeration, oversized input, injection, and data in logs or errors. -->
+
+| Abuse / exposure case | Possible? | Prevention |
+| --- | --- | --- |
+| <case> | Yes / No | <control> |
+
+**NIST 800-53 r5 / FedRAMP controls**
 
 <!-- Every row must say how THIS feature meets the control, or "n/a – <reason>". -->
 
-| Control (NIST 800-53 r5) | How this feature complies |
+| Control | How this feature complies |
 | --- | --- |
 | AC-3 / AC-6 Access enforcement, least privilege | <privilege per endpoint and UI element> |
 | AC-4 Tenant isolation | <AccountId scoping on every query, including raw SQL> |
@@ -203,14 +300,29 @@ Errors
 | SC-7 Boundary protection | <no new third-party service, CDN or data flow outside the authorized boundary> |
 | SI-10 Input validation | <server-side validation of every input> |
 | SI-11 Error handling | <no stack traces, SQL or internals in responses; traceId only> |
+| SI-12 Information retention | <retention and disposal of new data> |
 | CM-3 / CM-4 Change control | <migration review, security impact analysis, significant change?> |
 | RA-5 / SA-11 Scanning and testing | <SAST/dependency scan, no new unapproved packages> |
 
-## 9. Audit, logging and monitoring
+## 10. Monitoring and logging
+
+**Logs to be added**
 
 | Event | Where logged | Fields | Purpose |
 | --- | --- | --- | --- |
-| <event> | <activity log / change history / app log> | <user, ids, old/new, traceId> | <audit / diagnosis> |
+| <event> | <activity log / change history / app log> | <user, ids, old/new, traceId; no PII or secrets> | <audit / diagnosis> |
+
+**Metrics to track**
+
+| Metric | Source | Normal range |
+| --- | --- | --- |
+| <requests, failures, duration, rows processed> | <existing monitoring> | <value> |
+
+**Alerts required**
+
+| Alert | Condition | Who is notified |
+| --- | --- | --- |
+| <alert, or "None – reason"> | <threshold> | <team> |
 
 **Support runbook**
 
@@ -218,9 +330,18 @@ Errors
 | --- | --- | --- | --- |
 | <symptom> | <cause> | <log query, table, endpoint> | <fix> |
 
-## 10. Performance and scalability
+Operational owner: <team that supports this in production>
 
-<!-- Expected volumes, query count per request, paging, batch limits, load test targets. -->
+## 11. Performance and scalability
+
+| Topic | This feature |
+| --- | --- |
+| Expected volume | <rows per tenant, tenants, requests per day, peak> |
+| Query impact | <queries per request, joins, worst query and its plan> |
+| Indexing strategy | <summary; full list in section 13> |
+| Bulk operations | <batch size, transaction size, limits, or n/a> |
+| Pagination approach | <server side, page size, total count> |
+| 10x growth | <will it still perform at 10x data, tenants and users? what breaks first?> |
 
 **Caching**
 
@@ -230,13 +351,15 @@ Errors
 | --- | --- | --- | --- | --- | --- |
 | <data> | Yes / No | <in-memory / existing distributed cache / client state> | <AccountId + ...> | <TTL, cleared on save> | <read/write ratio, cost of a stale value> |
 
-## 11. Edge cases and failure scenarios
+## 12. Edge cases and failure scenarios
 
 | Scenario | Expected behaviour | Handling |
 | --- | --- | --- |
-| <scenario> | <behaviour the user sees> | <where in code, message, retry, rollback> |
+| <scenario, including concurrent edits> | <behaviour the user sees> | <where in code, message, retry, rollback> |
 
-## 12. Database design, inventory, migration and rollback
+## 13. Database changes
+
+<!-- Explain why each change is required. -->
 
 **Design**
 
@@ -245,6 +368,12 @@ Errors
 | Choice | Decision | Reason |
 | --- | --- | --- |
 | <normalisation / data type / nullability / delete behaviour> | <decision> | <reason> |
+
+**Relationships**
+
+| Parent | Child | Cardinality | On delete | Why |
+| --- | --- | --- | --- | --- |
+| <schema>.<Table> | <schema>.<Table> | 1 : many | Restrict | <rule> |
 
 **Indexes**
 
@@ -260,19 +389,19 @@ Errors
 | --- | --- | --- | --- |
 | <name> | <schema>.<Table> | Primary key / Foreign key / Unique / Check / Default / Not null | <business rule> |
 
-<!-- Every database object the feature touches, in one place, so nobody has to collect them from the tasks. Write "None" under a heading only when nothing applies. Full column lists stay in each task's Data model. -->
+<!-- Inventory: every database object the feature touches, in one place, so nobody has to collect them from the tasks. Write "None" under a heading only when nothing applies. Full column lists stay in each task's Data model. -->
 
-**Created**
+**New tables and objects**
 
-| Object | Type | Module / Schema | Purpose | Task |
+| Object | Type | Module / Schema | Why required | Task |
 | --- | --- | --- | --- | --- |
 | <schema>.<Table> | Table / Index / View / Stored procedure / Seed data | <module> | <why it exists> | Task <n> |
 
-**Altered**
+**Modified tables and columns added**
 
-| Object | Change | Existing data impact | Backward compatible | Task |
-| --- | --- | --- | --- | --- |
-| <schema>.<Table> | <column added / index / constraint / data fix> | <rows affected, backfill> | Yes / No – <why> | Task <n> |
+| Object | Change | Why required | Existing data impact | Backward compatible | Task |
+| --- | --- | --- | --- | --- | --- |
+| <schema>.<Table> | <column added (type, null) / index / constraint / data fix> | <reason> | <rows affected, backfill> | Yes / No – <why> | Task <n> |
 
 **Used without schema change**
 
@@ -280,50 +409,86 @@ Errors
 | --- | --- | --- | --- | --- |
 | <schema>.<Table> | Read / Write / Read-Write | <columns> | <use> | Task <n> |
 
-**Migration and rollback**
+## 14. Migration strategy
 
-<!-- Migration name and module, order, data backfill, existing data compatibility, delete behaviour (no Cascade), how to apply (automatic or by hand), rollback script, verification query after deploy. -->
+<!-- Only when existing data is involved. If the Data team owns the data migration, say so in one line with the owner and skip the details. Schema migrations always list their name, module, order and rollback. -->
 
-## 13. Testing and regression plan
+| Topic | Plan |
+| --- | --- |
+| Schema migration | <EF migration name, module, applied automatically or by hand, order> |
+| Data migration steps | <steps, or "None – no existing data" / "Data team – owner"> |
+| Validation approach | <row counts, sample checks, verification query> |
+| Rollback strategy | <Down migration, restore script, what data is lost> |
+
+## 15. Testing strategy
 
 | Level | Scope | Cases (positive / negative) |
 | --- | --- | --- |
 | Unit | | |
 | Integration / API | | |
-| E2E (Playwright) | | |
-| Security | Cross-tenant ids, missing privilege, input tampering | |
-| Performance | | |
+| E2E automation (Playwright) | | |
 | Regression | <modules that share changed code> | |
+| Security | Cross-tenant ids, missing privilege, input tampering | |
+| Performance | <volume and 10x targets> | |
+| UAT | <who signs off, scenarios, test data, environment> | |
 
-## 14. Deployment and rollback
+Edge cases to test: every row of section 12.
 
-<!-- Release order, feature flag, configuration, manual steps, verification after deploy, rollback steps. -->
+## 16. Deployment, cutover and rollback
 
-## 15. End-user impact
+| Topic | Plan |
+| --- | --- |
+| Deployment approach | <release order: database, backend, frontend; feature flag; configuration> |
+| Cutover plan | <go-live playbook: steps in order, who does each, downtime, communication, point of no return> |
+| Post-deployment validation | <smoke checks, queries, metrics to watch> |
+| Rollback strategy | <trigger, steps in order, data impact> |
 
-<!-- Does the journey get simpler? Fewer clicks, clearer messages, accessibility (Section 508 / WCAG 2.1 AA), training or help text needed. -->
+## 17. End-user impact
 
-## 16. Risks and trade-offs
+| Topic | This feature |
+| --- | --- |
+| Number of clicks | <before → after for the main journey> |
+| Discoverability | <where users find it> |
+| Error messaging | <clear, actionable, no internals> |
+| Accessibility | <Section 508 / WCAG 2.1 AA: keyboard, screen reader, contrast> |
+| Workflow efficiency | <what gets simpler, training or help text needed> |
 
-| Risk / trade-off | Impact | Likelihood | Mitigation |
+## 18. Risks and mitigations
+
+| Risk | Impact | Likelihood | Mitigation |
 | --- | --- | --- | --- |
-| <risk> | High / Medium / Low | High / Medium / Low | <mitigation> |
+| <risk, e.g. Large data volume> | <e.g. Slow page loads> · High / Medium / Low | High / Medium / Low | <e.g. Pagination and index optimisation> |
 
-## 17. Decisions from review
+## 19. General design considerations
+
+<!-- Answer each for THIS design, briefly and honestly. -->
+
+| Area | Question | Answer |
+| --- | --- | --- |
+| Architecture alignment | Aligned with the current platform architecture? Existing capabilities reused? Unnecessary complexity? More technical debt? | |
+| SOLID | Single responsibility, open/closed, Liskov substitution, interface segregation, dependency inversion: where each applies, and are new components maintainable, testable and loosely coupled? | |
+| Security and compliance | Least privilege, sensitive data exposure, auditability, data retention, NIST / FedRAMP and organisational standards | See section 9 |
+| Scalability | Data growth, tenant growth, query performance, batch operations, concurrency. Will it still perform at 10x? | See section 11 |
+| Supportability | Can a support engineer diagnose issues from the logs, metrics, alerts and runbook? Who owns it in production? | See section 10 |
+| Testability | Unit, integration, regression and automation testing possible without special setup? | See section 15 |
+| User experience | Clicks, discoverability, error messages, accessibility, workflow efficiency | See section 17 |
+| Future extensibility | Configuration over customisation, backward compatibility, upgrade paths | See section 23 |
+
+## 20. Decisions from review
 
 <!-- Every decision agreed with the developer during review, newest last, one line each with who and when. -->
 
 - <decision> – <name>, <YYYY-MM-DD>
 
-## 18. Open items
+## 21. Open questions
 
 <!-- Anything not decided, with an owner. Empty only when nothing is open. -->
 
-| Item | Owner | Needed by |
+| Question | Owner | Needed by |
 | --- | --- | --- |
-| <item> | <owner> | <date / milestone> |
+| <question> | <owner> | <date / milestone> |
 
-## 19. Implementation brief for developers and AI agents
+## 22. Implementation brief for developers and AI agents
 
 <!-- This TRD is the single source for the feature: a developer or an AI agent given only this file and a one-line request must be able to build, test and support it. This section is the map; the rest of the TRD is the detail. No reference to chat, meetings or files the reader will not have. -->
 
@@ -350,12 +515,12 @@ Errors
 
 **Definition of done**
 
-- [ ] All acceptance criteria in section 5 pass, positive and negative
-- [ ] Section 13 tests written and green; build and lint clean
-- [ ] Audit and logging in section 9 verified; section 8 controls met
+- [ ] All acceptance criteria in section 6 pass, positive and negative
+- [ ] Section 15 tests written and green; build and lint clean
+- [ ] Logging in section 10 verified; section 9 controls met
 - [ ] Migration applied and rolled back cleanly on a copy of production data
 
-## 20. Future scaling and extensibility
+## 23. Future scaling and extensibility
 
 <!-- How the design grows. Be specific to this feature and honest about limits. -->
 
@@ -365,10 +530,102 @@ Errors
 | Load | <requests per user action> | <concurrency limit> | <caching, async jobs, batching> |
 | Extensibility | <entities / modules covered> | <what is not covered> | <how to add the next entity without schema change> |
 | Integrations | <none / existing> | <future consumers: reports, mobile, API clients> | <contract or event to expose> |
-| Configuration | <hard-coded rules> | <when customers need variation> | <setting, data field, feature flag> |
+| Configuration | <hard-coded rules> | <when customers need variation> | <setting, data field, feature flag: configuration over customisation> |
+| Backward compatibility and upgrades | <contracts and data kept> | <what a later change could break> | <versioning, additive changes, upgrade path> |
 
-## 21. Revision history
+## 24. Revision history
 
 | Revision | Date | Author | Changes |
 | --- | --- | --- | --- |
 | r1 | <YYYY-MM-DD> | <name> | First draft |
+
+## Appendix A – TRD design checklist
+
+<!-- Tick each item only when the TRD really covers it. An unticked item says why in one line after it. -->
+
+**Business and functional**
+
+- [ ] Problem statement clearly defined
+- [ ] Business objective understood
+- [ ] Requirements mapped to solution
+- [ ] Scope and out of scope documented
+- [ ] Assumptions identified
+- [ ] Open questions captured
+
+**Architecture and design**
+
+- [ ] Solution aligns with existing architecture
+- [ ] Reuse of existing components evaluated
+- [ ] SOLID principles considered
+- [ ] Design minimises technical debt
+- [ ] Alternative approaches considered and documented
+
+**Functional flow**
+
+- [ ] Happy path covered
+- [ ] Error scenarios covered
+- [ ] Edge cases identified
+- [ ] Concurrency scenarios evaluated
+- [ ] Validation rules documented
+
+**Data and database**
+
+- [ ] Data model changes documented
+- [ ] Indexing requirements reviewed
+- [ ] Data retention requirements evaluated
+- [ ] Data migration considerations documented
+- [ ] Rollback approach identified
+
+**API and integration**
+
+- [ ] API contract documented
+- [ ] Error handling defined
+- [ ] Backward compatibility considered
+- [ ] External dependencies identified
+
+**Security and compliance**
+
+- [ ] Authentication requirements reviewed
+- [ ] Authorization requirements reviewed
+- [ ] Sensitive data handling reviewed
+- [ ] Audit requirements documented
+- [ ] NIST / FedRAMP implications considered
+- [ ] Regulatory or organisational compliance requirements reviewed
+
+**Performance and scalability**
+
+- [ ] Expected data volumes evaluated
+- [ ] Query performance reviewed
+- [ ] Pagination strategy defined
+- [ ] Scalability considerations documented
+- [ ] 10x growth scenario considered
+
+**Supportability and operations**
+
+- [ ] Logging requirements defined
+- [ ] Monitoring requirements identified
+- [ ] Alerting requirements identified
+- [ ] Troubleshooting approach documented
+- [ ] Production support impact evaluated
+
+**Testing**
+
+- [ ] Unit test scenarios identified
+- [ ] Integration test scenarios identified
+- [ ] Regression impact identified
+- [ ] Negative test cases considered
+
+**Deployment**
+
+- [ ] Deployment approach documented
+- [ ] Cutover plan documented
+- [ ] Rollback strategy documented
+- [ ] Post-deployment validation defined
+
+**User experience**
+
+- [ ] User workflow reviewed
+- [ ] Discoverability considered
+- [ ] Error messages reviewed
+- [ ] Accessibility considerations reviewed
+- [ ] Click reduction / workflow simplification considered
