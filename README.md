@@ -6,7 +6,7 @@ Claude Code plugins for zOne work: plan and build features, test them, handle Az
 
 | Plugin | Version | What it does |
 | --- | --- | --- |
-| **zDev** (`zdev`) | 1.1.3 | Plans a feature with you against the real code and builds it after you approve; writes TRDs with you and exports them to DOCX; rebuilds the backend and copies the module DLLs into the local frontend |
+| **zDev** (`zdev`) | 1.1.4 | Plans a feature with you against the real code and builds it after you approve; writes TRDs with you and exports them to DOCX; rebuilds the backend and copies the module DLLs into the local frontend |
 | **zOne Test** (`zone-test`) | 3.6.1 | QA code review, then Playwright E2E tests: design, write, run, fix and report as PDF |
 | **zWork** (`zwork`) | 1.0.0 | Your Azure DevOps bugs, tasks and PRs: list, review, plan, fix and open PRs |
 | **zOffice** (`zoffice`) | 1.7.1 | Turns the day's Claude Code sessions into zOffice time sheet entries and posts them |
@@ -51,7 +51,7 @@ Open Claude Code in the folder that holds your repositories (for example the one
 | Command | What it does |
 | --- | --- |
 | `/zdev:plan <feature> [files, screenshots, PDFs, Figma links]` | Plans a feature with you on Opus, read-only: reads your references and the code, shows the impact, asks the open decisions, writes a plan you review, then builds it on Sonnet or Opus only after you say go |
-| `/zdev:new-trd <feature> [PRDs, old TRDs, screenshots, PDFs, DOCX, HTML walkthrough]` | Drafts a FedRAMP-aware, self-contained Technical Requirement Document on Opus from your docs, the code and the HTML walkthrough (opened in Claude in Chrome), revises it with you section by section, asks instead of guessing, and exports the accepted TRD to a styled DOCX |
+| `/zdev:new-trd <feature> [PRDs, old TRDs, screenshots, PDFs, DOCX, HTML walkthrough]` | Drafts a FedRAMP-aware, self-contained Technical Requirement Document (short plain-language main body with decisions, scope and acceptance criteria; technical detail in appendices) on Opus from your docs, the code and the HTML walkthrough (opened in Claude in Chrome), revises it with you section by section, asks instead of guessing, and exports the accepted TRD to a styled DOCX |
 | `/zdev:copydll [zOne folder]` | Stops the running frontend, builds the backend, runs `CopyDll.bat`, copies `C:\zOneDlls\*.dll` into `frontend\bin\Debug\net7.0` and notifies when done (Windows) |
 
 Example: `/zdev:plan add a Region filter to the Lease grid, see screenshot.png`

@@ -133,6 +133,9 @@ function blocks(tokens, ctx = { level: 0 }) {
         }
         break;
       case "hr":
+        // a rule starts a new page: it separates the main body from the appendices
+        out.push(new Paragraph({ pageBreakBefore: true, children: [] }));
+        break;
       case "space":
         break;
       case "html":
