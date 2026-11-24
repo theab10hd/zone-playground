@@ -1,5 +1,5 @@
 ---
-description: "zOne app - senior QA review of a feature or files: a team of tester agents reads the code edge to edge, finds functional, data, security and UI bugs without running anything, reports them by severity, then plans and fixes them after you confirm"
+description: "zOne app - senior QA review of a feature or files: a team of tester agents reads the code edge to edge, finds functional, data, security and UI bugs by reading the code and by auditing the live app in the browser, reports them by severity, then plans and fixes them after you confirm"
 argument-hint: "<feature name or file paths> [docs: <PRD / TRD / spec paths>]"
 ---
 
@@ -7,7 +7,7 @@ argument-hint: "<feature name or file paths> [docs: <PRD / TRD / spec paths>]"
 
 Request: `$ARGUMENTS`
 
-You are the **senior QA lead** of a team of testers. Your job is to find every real bug in the feature's implementation, and in the existing code it touches, by reading the code, so the feature is clean before anyone writes Playwright tests for it. Do not run the app, Playwright or any test. Do not edit code until the user confirms a fix plan (step 7). Follow the project's `CLAUDE.md` if it has one.
+You are the **senior QA lead** of a team of testers. Your job is to find every real bug in the feature's implementation, and in the existing code it touches, by reading the code and by checking the live app in the browser, so the feature is clean before anyone writes Playwright tests for it. Never run Playwright or any test. The live pass (step 4a) only looks and measures; it never saves or changes data. Do not edit code until the user confirms a fix plan (step 7). Follow the project's `CLAUDE.md` if it has one.
 
 The goal is **bulletproof code, not a list of random bugs**. Cover the feature edge to edge, every file and every path in the map, in one pass, so that fixing this report does not leave the next round of bugs sitting in files nobody read. Report only bugs you can point to in the code. A finding without a file and line, or one you could not confirm, is not a bug.
 
@@ -18,7 +18,9 @@ If the request names no recognisable feature or file, ask one question to pin it
 - **Target**: a feature name and details, or one or more file paths, or both. File paths are entry points, not the whole scope: the feature they belong to is the scope.
 - **Reference docs**: any PRD, TRD, spec, design, ticket or other file the user names or attaches (`docs: ...`, a path, a pasted spec). Read every one in full. They define intended behaviour: code that disagrees with them is a bug.
 - **Workspace root**: the current working directory. It may hold several repos (for example `frontend/` and `backend/`); search all of them.
-- **Reports dir**: `C:\zOne Test Reports\` (on macOS or Linux, `~/zOne Test Reports/`). Create it if missing; always quote the path.
+- **Reports dir**: `D:\zOne Test Reports\` (on macOS or Linux, `~/zOne Test Reports/`). Create it if missing; always quote the path. If there is no `D:` drive, ask the user for a folder.
+
+Read `${CLAUDE_PLUGIN_ROOT}/reference/qa-bug-patterns.md` (Glob `**/ztest/**/reference/qa-bug-patterns.md` under `~/.claude/plugins/` if the path isn't expanded) and give each tester agent the patterns for its layer. Hunt for each pattern in the code: menu content and parity with the old view, units and symbols, scrollbars, modals, business rules enforced only in the menu, validation, cascading dropdowns, deleted entities, the same feature in every flow, roles, reports and audit logs.
 
 ## 1. Read the ground rules
 
@@ -32,7 +34,7 @@ Note every rule from these sources that the feature's code must obey (naming, er
 
 ## 2. Map the feature edge to edge
 
-Find every layer the feature touches, following step 1 of the `feature` command in this plugin (`${CLAUDE_PLUGIN_ROOT}/commands/feature.md`; if that path isn't expanded, use Glob `**/zone-test/**/commands/feature.md` under `~/.claude/plugins/`): graphify first if `graphify-out/graph.json` exists, otherwise Grep, Glob and parallel `Explore` agents per layer. Read the files; do not judge code by file names.
+Find every layer the feature touches, following step 1 of the `feature` command in this plugin (`${CLAUDE_PLUGIN_ROOT}/commands/feature.md`; if that path isn't expanded, use Glob `**/ztest/**/commands/feature.md` under `~/.claude/plugins/`): graphify first if `graphify-out/graph.json` exists, otherwise Grep, Glob and parallel `Explore` agents per layer. Read the files; do not judge code by file names.
 
 Then widen it to the **blast radius**: for every function, component, endpoint, DTO, model, store, style class and shared helper the feature defines or changes, grep its callers and consumers. Those files are in scope too, because a change that is correct for the feature can break a sibling that shares it.
 
@@ -64,9 +66,20 @@ Each tester must not run the app or tests, must not edit files, and must list an
 
 Size the team to the feature: for a small feature (a handful of files) merge lenses 5 and 6 into the others; for a large one, split a lens by repo or layer so no tester gets more files than it can read properly. Never drop the UI lens when the feature has a UI, or the security lens when it has an endpoint.
 
+### 4a. Live UI audit (the `ui-auditor` agent)
+
+Run this **in the same message as the code testers**, so both work at once. It finds what reading code cannot: a wrong scrollbar, a modal that opens blank or behind another popup, a missing tooltip, a unit that is not shown, a value that differs from the API, a menu item that does nothing.
+
+1. **Find the app.** Use the `baseURL` from `playwright.config.*`, a URL the user gave, or one in the reference docs. If none is known or the app is not reachable, ask the user once (`AskUserQuestion`) for the URL and the screen to start from; if they have none, skip this step and list it under **Not covered** in the report. Never start or alter servers.
+2. **Brief the agent.** Dispatch the `ui-auditor` agent (`subagent_type: "ztest:ui-auditor"`, or `ui-auditor` if that name is not found) with: the feature, the URL and starting screen, the scope map and a **control inventory** built from the code (every screen, view, tab, menu and sub-menu item, filter, setting, report action, modal, record type and role), the reference docs, the QA patterns path, which role is signed in, and whether the records are disposable test data (default: no, so it does not submit anything). For a large feature, send one agent per screen group, in parallel.
+3. **It is read-only and never signs in.** If it returns `BLOCKED: not signed in`, ask the user to sign in in their browser, then run it again.
+4. Keep its result for step 5. If the agent type is unavailable, do the same walk yourself with the Claude in Chrome tools, following `agents/ui-auditor.md`.
+
 ## 5. Verify as the senior QA
 
 Do not pass testers' findings straight to the user. For each finding:
+
+- **Live UI findings** from the `ui-auditor` need no code line to count, because the evidence is what was seen and measured. Re-check any that look doubtful (open the screen yourself or read the measurements), find the likely code location with Grep, and merge them with the code testers' matching findings into one bug.
 
 - **Open the code at every cited line and confirm it yourself.** Trace the input or state that triggers it. If the path cannot actually be reached (a guard upstream, a type that rules it out, a caller that never passes that value), drop it. If you are not sure, keep it only as `likely` and say what would settle it.
 - **Merge duplicates** across testers into one bug with every location.
@@ -81,7 +94,7 @@ Then **check coverage**: compare the files the testers reviewed with the scope m
 
 ## 6. Report the bugs
 
-Write the report to `C:\zOne Test Reports\<Feature-Name>-QA-Report.md` and post it in the chat too. Group the bugs by severity, Critical first, and number them within each group (`C1`, `C2`, `H1`, `M1`, `L1`). Show every bug one by one, exactly in this format:
+Write the report to `D:\zOne Test Reports\<Feature-Name>-QA-Report.md` and post it in the chat too. Group the bugs by severity, Critical first, and number them within each group (`C1`, `C2`, `H1`, `M1`, `L1`). Show every bug one by one, exactly in this format:
 
 ```markdown
 ## Critical
@@ -101,7 +114,7 @@ Use a severity heading only when it has bugs. After the bugs, add:
 - **Summary**: a count per severity.
 - **Scope reviewed**: the scope map from step 2, the reference docs and ground rules used.
 - **Assumptions and open questions**: anything the user didn't settle in step 3, and every `likely` bug's open point.
-- **Not covered**: anything you could not review, and why.
+- **Not covered**: anything you could not review, and why, including every screen, role, record type or modal the `ui-auditor` did not reach and whether the live audit ran at all.
 
 If no bug survives verification, say so plainly, with the scope reviewed. Do not invent findings to fill the report.
 
@@ -125,4 +138,4 @@ After go:
 
 ## 8. Final response
 
-Give the report path, the count per severity, what was fixed and in which files, the result of each check that ran, anything left open, and the next step: `/zone-test:feature <feature>` to write and run the Playwright suite on the cleaned feature.
+Give the report path, the count per severity, what was fixed and in which files, the result of each check that ran, anything left open, and the next step: `/ztest:feature <feature>` to write and run the Playwright suite on the cleaned feature.

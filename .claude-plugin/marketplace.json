@@ -4,32 +4,21 @@
     "name": "theab10hd"
   },
   "metadata": {
-    "description": "zOne Playground: Claude Code plugins for zOne work. Plan and build features against the real code, review and test them with Playwright, handle your Azure DevOps bugs, tasks and PRs, and fill in your zOffice time sheet. Describe what you need, and the tools read the code, do the work and show you the evidence."
+    "version": "2.0.0",
+    "description": "zOne Playground: Claude Code plugins for zOne work. Plan and build features against the real code, review and test them with Playwright. Describe what you need, and the tools read the code, do the work and show you the evidence."
   },
   "plugins": [
     {
-      "name": "zone-test",
-      "displayName": "zOne Test",
+      "name": "ztest",
+      "displayName": "zTest",
       "source": "./zone-test",
-      "description": "zOne QA and Playwright E2E testing: review a feature's code with a team of tester agents and fix the bugs found by severity (/zone-test:qa); design, write and run a Playwright suite for a feature (/zone-test:feature); run an existing suite, fix test defects and rerun (/zone-test:e2e). Every run ends in a PDF report."
-    },
-    {
-      "name": "zoffice",
-      "displayName": "zOffice",
-      "source": "./zoffice",
-      "description": "zOffice time sheets: draft the day's entries from your Claude Code sessions with start, break and work-from-home options, let you edit them, and give you the command that posts them to Daily Activities with Playwright (/zoffice:log); clear today's entries (/zoffice:clear)."
-    },
-    {
-      "name": "zwork",
-      "displayName": "zWork",
-      "source": "./zwork",
-      "description": "Azure DevOps work for zOne: a status dashboard and your bugs, tasks and PRs by state (/zwork:status, new, active, resolved); explain work items or review PRs against the code (/zwork:review); plan and fix bugs and tasks on their own branches (/zwork:plan); open linked PRs (/zwork:pr); check the connection (/zwork:init)."
+      "description": "zOne QA and Playwright E2E testing: review a feature's code and audit its live UI in the browser with a team of tester agents, including the ui-auditor agent, and fix the bugs found by severity (/ztest:qa); design, write and run a Playwright suite for a feature (/ztest:feature); run an existing suite, fix test defects and rerun (/ztest:e2e). Every run ends in a PDF report."
     },
     {
       "name": "zdev",
       "displayName": "zDev",
       "source": "./zdev",
-      "description": "zOne feature development: plan a feature with you against the real code on Opus (read-only investigation, impact analysis, open questions, a reviewed plan) and build it on Sonnet or Opus after you approve (/zdev:plan); draft a Technical Requirement Document with you from your docs and the code, revise it until you accept, and export a styled DOCX (/zdev:new-trd); stop the frontend, build the backend and copy the module DLLs into it in one command (/zdev:copydll)."
+      "description": "zOne feature development: plan a feature with you against the real code on Opus (read-only investigation, impact analysis, open questions, a reviewed plan) save the confirmed plan to the D: drive folder Claude Implementation Plans, and build it after you approve, in this session or a fresh session on Sonnet or Opus (/zdev:plan); draft a Technical Requirement Document with you from your docs and the code, revise it until you accept, and export a styled DOCX (/zdev:new-trd); add a new Custom Report data source as SQL migrations (/zdev:new-report); create or update the pull request with the right target branch, linked bugs and tasks, a clean title and description and a Depended PR tag when needed (/zdev:pr)."
     }
   ]
 }
