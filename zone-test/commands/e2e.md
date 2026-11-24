@@ -13,8 +13,8 @@ Run the requested Playwright tests, diagnose every failure from real evidence, f
 
 - **Workspace root**: the current working directory, the folder Claude Code was opened in. It may hold several repos (for example `frontend/` and `backend/`); search all of them. Never write reports inside a single sub-repo unless the workspace root is that repo.
 - **Playwright dir**: the folder that holds `playwright.config.{ts,js,mjs,cjs}`. Find it with Glob `**/playwright.config.*`, excluding `node_modules`. If there are several, ask which one to use. If there are none, stop and say that this repo has no Playwright setup.
-- **Reports dir**: `C:\zOne Test Reports\` (on macOS or Linux, `~/zOne Test Reports/`). Create it if it is missing. **Only the final PDF goes here**, never JSON or any other file. The path contains spaces, so always quote it.
-- **Work dir**: `<scratchpad>/zone-test/<project>/`, using your scratchpad directory if you have one, and otherwise the system temp folder. Every intermediate file goes here: the Playwright results JSON for each run (Initial, reruns), the report data and anything else you write along the way.
+- **Reports dir**: `D:\zOne Test Reports\` (on macOS or Linux, `~/zOne Test Reports/`). Create it if it is missing. If there is no `D:` drive, ask the user for a folder; never fall back to another drive silently. **Only the final PDF goes here**, never JSON or any other file. The path contains spaces, so always quote it.
+- **Work dir**: `<scratchpad>/ztest/<project>/`, using your scratchpad directory if you have one, and otherwise the system temp folder. Every intermediate file goes here: the Playwright results JSON for each run (Initial, reruns), the report data and anything else you write along the way.
 
 All the commands below run in the Playwright dir.
 
@@ -124,12 +124,12 @@ Rerun the fixed tests first, then the rest of their `describe` group and every o
 
 Never write the report HTML yourself. The plugin's renderer holds the one fixed design, so every report looks the same. Your job is to supply the data.
 
-1. Read `${CLAUDE_PLUGIN_ROOT}/scripts/sample-report.json`. If `${CLAUDE_PLUGIN_ROOT}` is not expanded, find it with Glob `**/zone-test/**/scripts/sample-report.json` under `~/.claude/plugins/`. It is the data format, by example. Use the same keys and no others.
+1. Read `${CLAUDE_PLUGIN_ROOT}/scripts/sample-report.json`. If `${CLAUDE_PLUGIN_ROOT}` is not expanded, find it with Glob `**/ztest/**/scripts/sample-report.json` under `~/.claude/plugins/`. It is the data format, by example. Use the same keys and no others.
 2. Write `<work dir>/<Feature-Name>-report-data.json` in that format:
    - `planned` is the `--list` count. `initial` holds the Initial counts from the first run's JSON.
    - `groups` has one entry per `describe` group, and every executed test is one case row, with its **Final** result (`passed`, `skipped`, `failed`, `blocked` or `notRun`), its time and, for skipped or blocked cases, its `reason`.
    - `narrative`: initial failures → fixes → reruns → final state.
-   - `findings`: confirmed items only, with `kind` set to `app`, `data`, `perf` or `test`. Fill in `evidence`, `expected`, `actual`, `impact` and `steps` wherever you have them. No speculation.
+   - `findings`: confirmed items only, with `kind` set to `app`, `ui`, `data`, `perf` or `test` (`ui` for layout, style, unit, scrollbar, size and modal problems). Mark each as `existing` or `new` in `tag` when you can tell. Fill in `evidence`, `expected`, `actual`, `impact` and `steps` wherever you have them. No speculation.
    - `runData`: environment and base URL, user or role (no secrets), data discovered or created, cleanup, and settings touched or restored.
    - `fixes`: each fix from step 6. `gaps`: skipped scenarios, unavailable data, untested paths and environment limits. `rerun`: the exact commands you ran, the working directory, auth prerequisites and artifact paths.
    - Use `[]` for an empty list; never leave a key out. Inline `code` in backticks is the only formatting supported.

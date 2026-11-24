@@ -1,9 +1,9 @@
 {
-  "name": "zone-test",
-  "displayName": "zOne Test",
+  "name": "ztest",
+  "displayName": "zTest",
   "icon": "./assets/logo.png",
-  "version": "3.6.1",
-  "description": "zOne QA and Playwright E2E testing: review a feature's code with a team of tester agents and fix the bugs found by severity (/zone-test:qa); design, write and run a Playwright suite for a feature (/zone-test:feature); run an existing suite, fix test defects and rerun (/zone-test:e2e). Every run ends in a PDF report",
+  "version": "2.0.0",
+  "description": "zOne QA and Playwright E2E testing: review a feature's code and audit its live UI in the browser with a team of tester agents, including the ui-auditor agent, and fix the bugs found by severity (/ztest:qa); design, write and run a Playwright suite for a feature (/ztest:feature); run an existing suite, fix test defects and rerun (/ztest:e2e). Every run ends in a PDF report",
   "author": { "name": "Abhijith G" },
   "repository": "https://github.com/theab10hd/zone-playground"
 }

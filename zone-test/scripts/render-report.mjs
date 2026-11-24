@@ -22,7 +22,7 @@ const logoDataUri = `data:image/png;base64,${readFileSync(path.join(path.dirname
 
 // ---- validate: refuse to render a report that would differ in shape ----
 const RESULTS = ['passed', 'skipped', 'failed', 'blocked', 'notRun'];
-const KINDS = ['app', 'data', 'perf', 'test'];
+const KINDS = ['app', 'ui', 'data', 'perf', 'test'];
 const errors = [];
 const need = (cond, msg) => { if (!cond) errors.push(msg); };
 const str = v => typeof v === 'string' && v.trim() !== '';
@@ -74,7 +74,7 @@ const title = (preliminary ? 'PRELIMINARY · ' : '') + r.title;
 const esc = s => String(s ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
 const md = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>'); // `code` spans only
 const PILL = { passed: ['pass', 'Passed'], skipped: ['skip', 'Skipped'], failed: ['fail', 'Failed'], blocked: ['grey', 'Blocked'], notRun: ['grey', 'Not run'] };
-const KIND = { app: 'App defect', data: 'Data', perf: 'Performance', test: 'Test defect' };
+const KIND = { app: 'App defect', ui: 'UI defect', data: 'Data', perf: 'Performance', test: 'Test defect' };
 const pill = res => `<span class="pill ${PILL[res][0]}">${PILL[res][1]}</span>`;
 const list = items => `<ul>${items.map(i => `<li>${md(i)}</li>`).join('')}</ul>`;
 const section = (h, body) => `<section><h2>${esc(h)}</h2>${body}</section>`;
@@ -163,7 +163,7 @@ td.time { font-family:var(--mono); white-space:nowrap; color:var(--muted); text-
 .why { display:block; color:var(--muted); font-size:8.5pt; margin-top:2px; }
 .findings > * + * { margin-top:10px; }
 .finding { border:1px solid var(--line); border-left:4px solid var(--fail); border-radius:7px; padding:10px 14px; display:grid; gap:6px; break-inside:avoid; }
-.finding.data { border-left-color:var(--skip); } .finding.perf { border-left-color:var(--accent); } .finding.test { border-left-color:var(--grey); }
+.finding.data { border-left-color:var(--skip); } .finding.ui { border-left-color:var(--skip); } .finding.perf { border-left-color:var(--accent); } .finding.test { border-left-color:var(--grey); }
 .finding .sev { font:600 7.5pt var(--mono); text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); }
 ul,ol { margin:0; padding-left:18px; display:grid; gap:3px; }
 /* Feature map and run data cards stack full width; side-by-side cards overlapped on long code paths. */

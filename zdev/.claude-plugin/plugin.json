@@ -2,8 +2,8 @@
   "name": "zdev",
   "displayName": "zDev",
   "icon": "./assets/logo.png",
-  "version": "1.1.4",
-  "description": "zOne feature development: plan a feature with you against the real code on Opus (read-only investigation, impact analysis, open questions, a reviewed plan) and build it on Sonnet or Opus after you approve (/zdev:plan); draft a Technical Requirement Document with you from your docs and the code, revise it until you accept, and export a styled DOCX (/zdev:new-trd); stop the frontend, build the backend and copy the module DLLs into it in one command (/zdev:copydll)",
+  "version": "2.0.0",
+  "description": "zOne feature development: plan a feature with you against the real code on Opus (read-only investigation, impact analysis, open questions, a reviewed plan) save the confirmed plan to the D: drive folder Claude Implementation Plans, and build it after you approve, in this session or a fresh session on Sonnet or Opus (/zdev:plan); draft a Technical Requirement Document with you from your docs and the code, revise it until you accept, and export a styled DOCX (/zdev:new-trd); add a new Custom Report data source as SQL migrations (/zdev:new-report); create or update the pull request with the right target branch, linked bugs and tasks, a clean title and description and a Depended PR tag when needed (/zdev:pr)",
   "author": { "name": "Abhijith G" },
   "repository": "https://github.com/theab10hd/zone-playground"
 }
